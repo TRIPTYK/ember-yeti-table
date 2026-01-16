@@ -16,6 +16,9 @@
     "doc": "doc",
     "test": "tests"
   },
+  "volta": {
+    "extends": "../package.json"
+  },
   "scripts": {
     "build": "vite build",
     "format": "prettier . --cache --write",
@@ -129,8 +132,5 @@
   "ember": {
     "edition": "octane"
   },
-  "private": true,
-  "volta": {
-    "node": "20.20.0"
-  }
+  "private": true
 }

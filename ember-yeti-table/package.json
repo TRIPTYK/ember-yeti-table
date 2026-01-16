@@ -56,6 +56,9 @@
     "@glimmer/component": "^2.0.0",
     "tracked-toolbox": "^2.2.0"
   },
+  "volta": {
+    "extends": "../package.json"
+  },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/eslint-parser": "^7.25.1",
