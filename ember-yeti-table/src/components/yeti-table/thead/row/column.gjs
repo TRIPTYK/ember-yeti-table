@@ -45,18 +45,24 @@ export default class Column extends Component {
     {{! template-lint-disable no-invalid-interactive }}
     {{#if this.visible}}
       <th
-        role={{if this.sortable 'button'}}
-        class='{{@class}}
+        role={{if this.sortable "button"}}
+        class="{{@class}}
           {{@theme.theadCell}}
           {{if this.sortable @theme.sorting.columnSortable}}
           {{if this.isSorted @theme.sorting.columnSorted}}
           {{if this.isAscSorted @theme.sorting.columnSortedAsc}}
-          {{if this.isDescSorted @theme.sorting.columnSortedDesc}}'
-        {{on 'click' (if this.sortable (fn @onClick this) this.noop)}}
+          {{if this.isDescSorted @theme.sorting.columnSortedDesc}}"
+        {{on "click" (if this.sortable (fn @onClick this) this.noop)}}
         {{this.updateName}}
         ...attributes
       >
-        {{yield (hash isSorted=this.isSorted isAscSorted=this.isAscSorted isDescSorted=this.isDescSorted)}}
+        {{yield
+          (hash
+            isSorted=this.isSorted
+            isAscSorted=this.isAscSorted
+            isDescSorted=this.isDescSorted
+          )
+        }}
       </th>
     {{/if}}
   </template>
@@ -221,13 +227,13 @@ export default class Column extends Component {
     let sortSequence = this.args.sortSequence;
     assert(
       '@sortSequence must be either a comma-separated string or an array. Got `${sortSequence}.`',
-      isArray(sortSequence) || typeof sortSequence === 'string'
+      isArray(sortSequence) || typeof sortSequence === 'string',
     );
 
     if (isArray(sortSequence)) {
       return sortSequence;
     } else if (typeof sortSequence === 'string') {
-      return sortSequence.split(',').map(s => s.trim());
+      return sortSequence.split(',').map((s) => s.trim());
     } else {
       return [];
     }
@@ -244,7 +250,7 @@ export default class Column extends Component {
     this.args.parent?.unregisterColumn(this);
   }
 
-  updateName = modifier(element => {
+  updateName = modifier((element) => {
     if (!this.args.name) {
       this.name = element.textContent.trim();
     }

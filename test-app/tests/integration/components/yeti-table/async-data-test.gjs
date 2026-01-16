@@ -6,7 +6,7 @@ import { tracked } from '@glimmer/tracking';
 import { later } from '@ember/runloop';
 import { notifyPropertyChange } from '@ember/object';
 
-import { timeout, restartableTask } from 'ember-concurrency';
+import { timeout, task } from 'ember-concurrency';
 import RSVP from 'rsvp';
 import sinon from 'sinon';
 
@@ -867,13 +867,12 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     let hardWorkCounter = 0;
 
     class Obj {
-      @restartableTask
-      *loadData() {
-        spy(...arguments);
-        yield timeout(100);
+      loadData =  task({ restartable: true }, async (...args) => {
+        spy(...args);
+        await timeout(100);
         hardWorkCounter++;
         return testParams.data;
-      }
+      });
     }
 
     let obj = new Obj();

@@ -1,5 +1,4 @@
 import Component from '@glimmer/component';
-import { tracked } from '@glimmer/tracking';
 
 /**
   An component yielded from the head.row component that is used to define
@@ -32,25 +31,18 @@ import { tracked } from '@glimmer/tracking';
 export default class THeadCell extends Component {
   <template>
     {{#if this.column.visible}}
-      <th class='{{@class}} {{@theme.theadCell}}' ...attributes>
+      <th class="{{@class}} {{@theme.theadCell}}" ...attributes>
         {{yield}}
       </th>
     {{/if}}
   </template>
 
-  @tracked
-  index;
-
-  get column() {
-    return this.args.prop ?
-      this.args.columns.find((column) => column.prop === this.args.prop) :
-      this.args.columns[this.index];
-  }
+  // Assigned when the cell is registered
+  column = undefined;
 
   constructor() {
     super(...arguments);
-
-    this.index = this.args.parent?.registerCell(this);
+    this.column = this.args.parent?.registerCell(this);
   }
 
   willDestroy() {

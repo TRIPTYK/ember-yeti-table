@@ -25,13 +25,18 @@ import { hash } from '@ember/helper';
 
 export default class THeadRow extends Component {
   <template>
-    <tr class='{{@trClass}} {{@theme.theadRow}} {{@theme.row}}' ...attributes>
+    <tr class="{{@trClass}} {{@theme.theadRow}} {{@theme.row}}" ...attributes>
       {{yield
         (hash
           column=(component
-            Column sortable=@sortable sortSequence=@sortSequence onClick=@onColumnClick theme=@theme parent=@parent
+            Column
+            sortable=@sortable
+            sortSequence=@sortSequence
+            onClick=@onColumnClick
+            theme=@theme
+            parent=@parent
           )
-          cell=(component Cell theme=@theme parent=this columns=@columns)
+          cell=(component Cell theme=@theme parent=this)
         )
       }}
     </tr>
@@ -40,14 +45,27 @@ export default class THeadRow extends Component {
   cells = [];
 
   registerCell(cell) {
-    let index = this.cells.length;
+    let column;
+
+    if (cell.prop) {
+      column = this.args.columns.findBy('prop', cell.prop);
+      cell.column = column;
+    } else {
+      let index = this.cells.length;
+      column = this.args.columns[index];
+
+      return column;
+    }
+
     this.cells.push(cell);
-    return index;
+
+    return column;
   }
 
   unregisterCell(cell) {
     let cells = this.cells;
     let index = cells.indexOf(cell);
+
     cells.splice(index, 1);
   }
 }

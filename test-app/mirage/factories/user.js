@@ -6,7 +6,7 @@ export default Factory.extend({
   lastName: () => faker.person.firstName(),
   age: () => faker.number.int({ max: 69, min: 18 }),
   email: () => faker.internet.email(),
-  username: () => faker.internet.userName(),
+  username: () => faker.internet.username(),
   phone: () => faker.phone.number(),
   city: () => faker.location.city(),
   avatarUrl: () => faker.image.avatar()

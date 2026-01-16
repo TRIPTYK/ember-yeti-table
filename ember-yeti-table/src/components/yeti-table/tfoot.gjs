@@ -23,7 +23,11 @@ import TFootRow from './tfoot/row.gjs';
 export default class TFoot extends Component {
   <template>
     <tfoot class={{@theme.tfoot}} ...attributes>
-      {{yield (hash row=(component TFootRow columns=@columns theme=@theme parent=@parent))}}
+      {{yield
+        (hash
+          row=(component TFootRow columns=@columns theme=@theme parent=@parent)
+        )
+      }}
     </tfoot>
   </template>
 }

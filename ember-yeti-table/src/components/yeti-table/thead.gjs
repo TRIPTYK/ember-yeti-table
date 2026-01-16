@@ -20,7 +20,6 @@
 import { hash } from '@ember/helper';
 import THead from './thead/row.gjs';
 
-// eslint-disable-next-line ember/no-empty-glimmer-component-classes
 <template>
   <thead class={{@theme.thead}} ...attributes>
     {{yield

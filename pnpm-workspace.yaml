@@ -1,3 +1,5 @@
 packages:
-  - 'ember-yeti-table'
-  - 'test-app'
+  - ember-yeti-table
+  - test-app
+onlyBuiltDependencies:
+  - ember-modal-dialog

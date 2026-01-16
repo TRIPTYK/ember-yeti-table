@@ -31,8 +31,11 @@ import { localCopy } from 'tracked-toolbox';
   @class Pagination
 */
 import { on } from '@ember/modifier';
+import { guidFor } from '@ember/object/internals';
 
 export default class Pagination extends Component {
+  guid = guidFor(this);
+
   <template>
     <div class={{@theme.pagination.controls}} ...attributes>
       {{#if this.showInfo}}
@@ -49,10 +52,17 @@ export default class Pagination extends Component {
 
       {{#if this.showPageSizeSelector}}
         <div class={{@theme.pagination.pageSize}}>
-          Rows per page:
-          <select disabled={{@disabled}} {{on 'change' this.changePageSize}}>
+          <label for="page-size-select-{{this.guid}}">Rows per page:</label>
+          <select
+            id="page-size-select-{{this.guid}}"
+            disabled={{@disabled}}
+            {{on "change" this.changePageSize}}
+          >
             {{#each this.pageSizes as |pageSize|}}
-              <option value={{pageSize}} selected={{this.isPaginationNumberSelected pageSize}}>{{pageSize}}</option>
+              <option
+                value={{pageSize}}
+                selected={{this.isPaginationNumberSelected pageSize}}
+              >{{pageSize}}</option>
             {{/each}}
           </select>
         </div>
@@ -60,19 +70,19 @@ export default class Pagination extends Component {
 
       {{#if this.showButtons}}
         <button
-          type='button'
+          type="button"
           class={{@theme.pagination.previous}}
           disabled={{this.shouldDisablePrevious}}
-          {{on 'click' @paginationActions.previousPage}}
+          {{on "click" @paginationActions.previousPage}}
         >
           Previous
         </button>
 
         <button
-          type='button'
+          type="button"
           class={{@theme.pagination.next}}
           disabled={{this.shouldDisableNext}}
-          {{on 'click' @paginationActions.nextPage}}
+          {{on "click" @paginationActions.nextPage}}
         >
           Next
         </button>

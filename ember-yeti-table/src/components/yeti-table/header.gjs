@@ -29,7 +29,7 @@ import { hash } from '@ember/helper';
 export default class Header extends Component {
   <template>
     <thead class={{@theme.thead}} ...attributes>
-      <tr class='{{@trClass}} {{@theme.theadRow}} {{@theme.row}}'>
+      <tr class="{{@trClass}} {{@theme.theadRow}} {{@theme.row}}">
         {{yield
           (hash
             column=(component

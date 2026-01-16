@@ -22,8 +22,10 @@ import Cell from './row/cell.gjs';
 
 export default class TFootRow extends Component {
   <template>
-    <tr class='{{@class}} {{@theme.tfootRow}} {{@theme.row}}' ...attributes>
-      {{yield (hash cell=(component Cell theme=@theme parent=this columns=@columns))}}
+    <tr class="{{@class}} {{@theme.tfootRow}} {{@theme.row}}" ...attributes>
+      {{yield
+        (hash cell=(component Cell theme=@theme parent=this columns=@columns))
+      }}
     </tr>
   </template>
   cells = [];

@@ -61,7 +61,8 @@ export function sortMultiple(itemA, itemB, sorts, compare) {
     let valueA = get(itemA, prop);
     let valueB = get(itemB, prop);
 
-    compareValue = direction === 'asc' ? compare(valueA, valueB) : -compare(valueA, valueB);
+    compareValue =
+      direction === 'asc' ? compare(valueA, valueB) : -compare(valueA, valueB);
 
     if (compareValue !== 0) {
       break;
@@ -103,3 +104,5 @@ export function compareValues(itemA, itemB) {
 
   return compare(itemA, itemB);
 }
+
+export default compareValues;

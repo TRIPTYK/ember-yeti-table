@@ -49,12 +49,14 @@ export default class TBodyRow extends Component {
   <template>
     {{! template-lint-disable no-invalid-interactive }}
     <tr
-      class='{{@theme.tbodyRow}} {{@theme.row}}'
-      {{on 'click' this.handleClick}}
-      role={{if @onClick 'button'}}
+      class="{{@theme.tbodyRow}} {{@theme.row}}"
+      {{on "click" this.handleClick}}
+      role={{if @onClick "button"}}
       ...attributes
     >
-      {{yield (hash cell=(component Cell theme=@theme parent=this columns=@columns))}}
+      {{yield
+        (hash cell=(component Cell theme=@theme parent=this columns=@columns))
+      }}
     </tr>
   </template>
 

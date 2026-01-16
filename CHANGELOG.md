@@ -1,15 +1,3 @@
-# v2.0.2
-
-#### 🐛 Bugfixes
-
-- fix rendering of cells within additional header row [#465](https://github.com/miguelcobain/ember-yeti-table/pull/465)
-
-# v2.0.1
-
-#### 🐛 Bugfixes
-
-- relax ember-source peer dependency to `>= 4.0.0` to suppport Ember v6 [#470](https://github.com/miguelcobain/ember-yeti-table/pull/470)
-
 # v2.0.0
 
 #### 🚨 Breaking Changes

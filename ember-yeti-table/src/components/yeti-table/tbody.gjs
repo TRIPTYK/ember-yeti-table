@@ -35,7 +35,14 @@ import TBodyRow from './tbody/row.gjs';
 export default class TBody extends Component {
   <template>
     <tbody class={{@theme.tbody}} ...attributes>
-      {{yield (hash row=(component TBodyRow theme=@theme onClick=@onRowClick columns=@columns)) @data}}
+      {{yield
+        (hash
+          row=(component
+            TBodyRow theme=@theme onClick=@onRowClick columns=@columns
+          )
+        )
+        @data
+      }}
     </tbody>
   </template>
   /**

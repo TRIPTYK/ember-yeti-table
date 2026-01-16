@@ -10,9 +10,13 @@ import { trackedFunction } from 'reactiveweb/function';
 import { keepLatest } from 'reactiveweb/keep-latest';
 import { cached, dedupeTracked, localCopy } from 'tracked-toolbox';
 
-import DEFAULT_THEME from '../themes/default-theme';
-import filterData from '../utils/filtering-utils';
-import { compareValues, mergeSort, sortMultiple } from '../utils/sorting-utils';
+import DEFAULT_THEME from '../themes/default-theme.js';
+import filterData from '../utils/filtering-utils.js';
+import {
+  compareValues,
+  mergeSort,
+  sortMultiple,
+} from '../utils/sorting-utils.js';
 import Helper from '@ember/component/helper';
 /**
  The primary Yeti Table component. This component represents the root of the
@@ -99,7 +103,7 @@ const getConfigWithDefault = function (key, defaultValue) {
   };
 };
 
-// we keep `totalRows` updated manually in an untracked property
+// we keep `totalRows` updated manually in xwaan untracked property
 // to allow the user to update it in a loadData call and avoid
 // a re-run of the main tracked function
 class UpdateTotalRows extends Helper {
@@ -128,10 +132,8 @@ class ProcessedData extends Helper {
     if (!loadData) {
       context.processData(data);
     } else {
-      /* eslint-disable ember/no-side-effects */
       // This is instrumental to ignoreDataChanges working
       context.processedData = data;
-      /* eslint-enable */
     }
     return '';
   }
@@ -160,9 +162,23 @@ export default class YetiTable extends Component {
           theme=this.mergedTheme
           parent=this
         )
-        body=(component Body data=this.processedData columns=this.columns theme=this.mergedTheme parent=this)
-        tbody=(component TBody data=this.processedData columns=this.columns theme=this.mergedTheme parent=this)
-        tfoot=(component TFoot columns=this.columns theme=this.mergedTheme parent=this)
+        body=(component
+          Body
+          data=this.processedData
+          columns=this.columns
+          theme=this.mergedTheme
+          parent=this
+        )
+        tbody=(component
+          TBody
+          data=this.processedData
+          columns=this.columns
+          theme=this.mergedTheme
+          parent=this
+        )
+        tfoot=(component
+          TFoot columns=this.columns theme=this.mergedTheme parent=this
+        )
         pagination=(component
           Pagination
           disabled=this.isLoading
@@ -241,7 +257,7 @@ export default class YetiTable extends Component {
     nextPage: this.nextPage,
     goToPage: this.goToPage,
     changePageSize: this.changePageSize,
-    reloadData: this.reloadData
+    reloadData: this.reloadData,
   };
 
   /**
@@ -386,7 +402,10 @@ export default class YetiTable extends Component {
    * @argument sortSequence
    * @type {Array<string> | string}
    */
-  @localCopy('args.sortSequence', getConfigWithDefault('sortSequence', ['asc', 'desc']))
+  @localCopy(
+    'args.sortSequence',
+    getConfigWithDefault('sortSequence', ['asc', 'desc']),
+  )
   sortSequence;
 
   /**
@@ -400,7 +419,10 @@ export default class YetiTable extends Component {
    * @argument ignoreDataChanges
    * @type {boolean}
    */
-  @localCopy('args.ignoreDataChanges', getConfigWithDefault('ignoreDataChanges', false))
+  @localCopy(
+    'args.ignoreDataChanges',
+    getConfigWithDefault('ignoreDataChanges', false),
+  )
   ignoreDataChanges;
 
   /**
@@ -439,10 +461,13 @@ export default class YetiTable extends Component {
 
   @cached
   get visibleColumns() {
-    return this.columns.filter(c => c.visible === true);
+    return this.columns.filter((c) => c.visible === true);
   }
 
-  config = getOwner(this).resolveRegistration('config:environment')['ember-yeti-table'] || {};
+  config =
+    getOwner(this).resolveRegistration('config:environment')[
+      'ember-yeti-table'
+    ] || {};
 
   get normalizedTotalRows() {
     if (!this.args.loadData) {
@@ -490,7 +515,16 @@ export default class YetiTable extends Component {
       pageEnd = Math.min(pageEnd, totalRows);
     }
 
-    return { pageSize, pageNumber, pageStart, pageEnd, isFirstPage, isLastPage, totalRows, totalPages };
+    return {
+      pageSize,
+      pageNumber,
+      pageStart,
+      pageEnd,
+      isFirstPage,
+      isLastPage,
+      totalRows,
+      totalPages,
+    };
   }
 
   @tracked
@@ -500,6 +534,7 @@ export default class YetiTable extends Component {
     super(...arguments);
 
     if (typeof this.args.registerApi === 'function') {
+      // eslint-disable-next-line ember/no-runloop
       scheduleOnce('actions', null, this.args.registerApi, this.publicApi);
     }
   }
@@ -543,7 +578,7 @@ export default class YetiTable extends Component {
 
   @use latestData = keepLatest({
     value: () => this.resolvedData.value ?? [],
-    when: () => this.resolvedData.isPending
+    when: () => this.resolvedData.isPending,
   });
 
   @tracked
@@ -554,10 +589,13 @@ export default class YetiTable extends Component {
 
   processData(data) {
     // only columns that have filterable = true and a prop defined will be considered
-    let columns = this.columns.filter(c => c.filterable && isPresent(c.prop));
+    let columns = this.columns.filter((c) => c.filterable && isPresent(c.prop));
 
-    let sortableColumns = this.columns.filter(c => !isEmpty(c.sort));
-    let sortings = sortableColumns.map(c => ({ prop: c.prop, direction: c.sort }));
+    let sortableColumns = this.columns.filter((c) => !isEmpty(c.sort));
+    let sortings = sortableColumns.map((c) => ({
+      prop: c.prop,
+      direction: c.sort,
+    }));
 
     let filterFunction = this.args.filterFunction;
     let filterUsing = this.args.filterUsing;
@@ -569,7 +607,12 @@ export default class YetiTable extends Component {
       // Sort the data
       if (sortings.length > 0) {
         data = mergeSort(data, (itemA, itemB) => {
-          return this.sortFunction(itemA, itemB, sortings, this.compareFunction);
+          return this.sortFunction(
+            itemA,
+            itemB,
+            sortings,
+            this.compareFunction,
+          );
         });
       }
 
@@ -585,6 +628,7 @@ export default class YetiTable extends Component {
     };
 
     if (this.ignoreDataChanges) {
+      // eslint-disable-next-line ember/no-runloop
       later(processTheData, 0);
     } else {
       processTheData();
@@ -598,15 +642,17 @@ export default class YetiTable extends Component {
       params.paginationData = this.paginationData;
     }
 
-    params.sortData = this.columns.filter(c => !isEmpty(c.sort)).map(c => ({ prop: c.prop, direction: c.sort }));
+    params.sortData = this.columns
+      .filter((c) => !isEmpty(c.sort))
+      .map((c) => ({ prop: c.prop, direction: c.sort }));
     params.filterData = {
       filter: this.filter,
       filterUsing: this.args.filterUsing,
-      columnFilters: this.columns.map(c => ({
+      columnFilters: this.columns.map((c) => ({
         prop: c.prop,
         filter: c.filter,
-        filterUsing: c.filterUsing
-      }))
+        filterUsing: c.filterUsing,
+      })),
     };
 
     return params;
@@ -633,7 +679,10 @@ export default class YetiTable extends Component {
       // sorting on the sequence.
       let direction = column.sort;
       let sortSequence = column.normalizedSortSequence;
-      direction = sortSequence[(sortSequence.indexOf(direction) + 1) % sortSequence.length];
+      direction =
+        sortSequence[
+          (sortSequence.indexOf(direction) + 1) % sortSequence.length
+        ];
 
       if (direction === 'unsorted') {
         direction = null;
@@ -642,8 +691,8 @@ export default class YetiTable extends Component {
 
       if (!e.shiftKey) {
         // if not pressed shift, reset other column sorting
-        let columns = this.columns.filter(c => c !== column);
-        columns.forEach(c => (c.sort = null));
+        let columns = this.columns.filter((c) => c !== column);
+        columns.forEach((c) => (c.sort = null));
       }
     } else {
       // use first direction from sort sequence
@@ -655,8 +704,8 @@ export default class YetiTable extends Component {
       // shift click adds a new sorting to the existing ones
       if (!e.shiftKey) {
         // if not pressed shift, reset other column sortings
-        let columns = this.columns.filter(c => c !== column);
-        columns.forEach(c => (c.sort = null));
+        let columns = this.columns.filter((c) => c !== column);
+        columns.forEach((c) => (c.sort = null));
       }
     }
   }
@@ -701,6 +750,7 @@ export default class YetiTable extends Component {
   }
 
   registerColumn(column) {
+    // eslint-disable-next-line ember/no-runloop
     schedule('afterRender', this, function () {
       if (typeof this.args.isColumnVisible === 'function') {
         column.visible = this.args.isColumnVisible(column);
@@ -714,7 +764,7 @@ export default class YetiTable extends Component {
 
   unregisterColumn(column) {
     if (this.columns.includes(column)) {
-      this.columns = this.columns.filter(c => c !== column);
+      this.columns = this.columns.filter((c) => c !== column);
     }
   }
 }

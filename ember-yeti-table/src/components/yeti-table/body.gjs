@@ -44,7 +44,15 @@ export default class Body extends Component {
       {{#if (has-block)}}
 
         {{#each @data as |rowData index|}}
-          {{yield (hash row=(component TBodyRow theme=@theme onClick=@onRowClick columns=@columns)) rowData index}}
+          {{yield
+            (hash
+              row=(component
+                TBodyRow theme=@theme onClick=@onRowClick columns=@columns
+              )
+            )
+            rowData
+            index
+          }}
         {{/each}}
 
       {{else}}

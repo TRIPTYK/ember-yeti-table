@@ -23,7 +23,10 @@ import { hash } from '@ember/helper';
 export default class TBodyCell extends Component {
   <template>
     {{#if this.column.visible}}
-      <td class='{{@class}} {{this.column.columnClass}} {{@theme.tbodyCell}}' ...attributes>
+      <td
+        class="{{@class}} {{this.column.columnClass}} {{@theme.tbodyCell}}"
+        ...attributes
+      >
         {{yield (hash prop=this.column.prop)}}
       </td>
     {{/if}}

@@ -4,14 +4,14 @@ import { get } from '@ember/object';
 import createRegex from './create-regex.js';
 
 function createColumnFilters(columns) {
-  let searcheableColumns = columns.filter(c => {
+  let searcheableColumns = columns.filter((c) => {
     return !isEmpty(c.filter) || !isEmpty(c.filterFunction);
   });
 
-  return searcheableColumns.map(c => {
+  return searcheableColumns.map((c) => {
     let regex = createRegex(c.filter);
 
-    return row => {
+    return (row) => {
       let value = get(row, c.prop);
       let passesRegex = true;
 
@@ -30,7 +30,13 @@ function createColumnFilters(columns) {
   });
 }
 
-export default function filterData(data, columns, globalFilter, filterFunction, filterUsing) {
+export default function filterData(
+  data,
+  columns,
+  globalFilter,
+  filterFunction,
+  filterUsing,
+) {
   if (isEmpty(data)) {
     return [];
   }
@@ -44,11 +50,11 @@ export default function filterData(data, columns, globalFilter, filterFunction, 
 
   let columnFilters = createColumnFilters(columns);
 
-  return data.filter(row => {
+  return data.filter((row) => {
     let passesGeneral = true;
 
     if (!isEmpty(globalRegex)) {
-      passesGeneral = columns.some(c => {
+      passesGeneral = columns.some((c) => {
         return globalRegex.test(get(row, c.prop));
       });
     }
@@ -56,7 +62,7 @@ export default function filterData(data, columns, globalFilter, filterFunction, 
     let passesColumn = true;
 
     if (!isEmpty(columnFilters)) {
-      passesColumn = columnFilters.every(fn => fn(row));
+      passesColumn = columnFilters.every((fn) => fn(row));
     }
 
     let passesCustom = true;
