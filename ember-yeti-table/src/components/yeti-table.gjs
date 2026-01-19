@@ -554,8 +554,15 @@ export default class YetiTable extends Component {
       let params = this.computeLoadDataParams();
 
       try {
+        console.log("loadData", params);
+
         data = await this.args.loadData(params);
+
+        console.log("loadData end");
+
       } catch (e) {
+        console.log(e);
+
         if (!didCancel(e)) {
           // re-throw the non-cancellation error
           throw e;
