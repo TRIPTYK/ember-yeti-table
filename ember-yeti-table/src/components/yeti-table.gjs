@@ -8,7 +8,8 @@ import merge from 'deepmerge';
 import { use } from 'ember-resources';
 import { trackedFunction } from 'reactiveweb/function';
 import { keepLatest } from 'reactiveweb/keep-latest';
-import { cached, dedupeTracked, localCopy } from 'tracked-toolbox';
+import { dedupeTracked, localCopy } from 'tracked-toolbox';
+import { cached } from '@glimmer/tracking';
 
 import DEFAULT_THEME from '../themes/default-theme.js';
 import filterData from '../utils/filtering-utils.js';
