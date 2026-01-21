@@ -531,8 +531,10 @@ export default class YetiTable extends Component {
   @tracked
   columns = [];
 
-  constructor() {
+  constructor(owner, args) {
     super(...arguments);
+
+    console.log(owner, args);
 
     if (typeof this.args.registerApi === 'function') {
       // eslint-disable-next-line ember/no-runloop

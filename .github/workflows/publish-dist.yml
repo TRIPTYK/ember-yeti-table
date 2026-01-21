@@ -16,8 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: NullVoxPopuli/action-setup-pnpm@v2
-      - uses: kategengler/put-built-npm-package-contents-on-branch@v1.0.0
+      - uses: kategengler/put-built-npm-package-contents-on-branch@v2.1.0
         with:
           branch: ${{ github.head_ref || github.ref_name }}-dist
           token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: ember-yeti-table
+          omit-scripts: '*'
