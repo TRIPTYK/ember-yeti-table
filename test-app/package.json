@@ -33,7 +33,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:types": "ember-tsc",
     "start": "vite",
-    "test": "pnpm vitest"
+    "test": "vite build --mode=development --out-dir dist-tests && testem --file testem.cjs ci --port 0"
   },
   "exports": {
     "./tests/*": "./tests/*",
