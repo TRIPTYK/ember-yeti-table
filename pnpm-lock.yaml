@@ -25,7 +25,7 @@ importers:
         specifier: 2.0.0
         version: 2.0.0
       decorator-transforms:
-        specifier: ~2.3.1
+        specifier: ^2.2.2
         version: 2.3.1(@babel/core@7.28.6)
       deepmerge:
         specifier: ^4.3.1
@@ -53,11 +53,11 @@ importers:
         specifier: ^7.25.6
         version: 7.28.6
       '@ember/app-tsconfig':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^1.0.0
+        version: 1.0.3
       '@ember/library-tsconfig':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^1.0.0
+        version: 1.1.3
       '@ember/test-helpers':
         specifier: ^5.2.1
         version: 5.4.1(@babel/core@7.28.6)(@glint/template@1.7.3)
@@ -86,7 +86,7 @@ importers:
         specifier: ^6.0.4
         version: 6.1.0(@babel/core@7.28.6)(rollup@4.56.0)
       babel-plugin-ember-template-compilation:
-        specifier: ^4.0.0
+        specifier: ~4.0.0
         version: 4.0.0
       concurrently:
         specifier: ^9.0.1
@@ -122,10 +122,10 @@ importers:
         specifier: ^17.15.1
         version: 17.23.2(eslint@9.39.2)
       globals:
-        specifier: ^17.0.0
-        version: 17.0.0
+        specifier: ^16.1.0
+        version: 16.5.0
       prettier:
-        specifier: ^3.8.1
+        specifier: ^3.4.2
         version: 3.8.1
       prettier-plugin-ember-template-tag:
         specifier: ^2.0.4
@@ -137,7 +137,7 @@ importers:
         specifier: ^3.4.0
         version: 3.5.0
       rollup:
-        specifier: ^4.56.0
+        specifier: ~4.56.0
         version: 4.56.0
       testem:
         specifier: ^3.15.1
@@ -1102,14 +1102,11 @@ packages:
   '@ember/app-tsconfig@1.0.3':
     resolution: {integrity: sha512-dw+/F68xvBw8JYLpyFmAcnF5d/vZqlP6GkEde+XIuPPPn6PIakrh0jtP0/tPxBw8tVuc6eD+H+8CWSsSFrGuiA==}
 
-  '@ember/app-tsconfig@2.0.0':
-    resolution: {integrity: sha512-NmD1OZFtCF49k4WDaPdhGP4OKoRbPaXpTBO3AsJe0okIJeCVUiEiC8YUpfTJmld9EJOEa9mW/p0tJQS70GktOA==}
-
   '@ember/edition-utils@1.2.0':
     resolution: {integrity: sha512-VmVq/8saCaPdesQmftPqbFtxJWrzxNGSQ+e8x8LLe3Hjm36pJ04Q8LeORGZkAeOhldoUX9seLGmSaHeXkIqoog==}
 
-  '@ember/library-tsconfig@2.0.0':
-    resolution: {integrity: sha512-DTGt9TYZ3bhObUviQXx4C0v46oWM7HsRrUTbgONw2QBhJVHlmXA89uXenlvuqVrCQkA0g5kz7wwyOlcjIZ8h0w==}
+  '@ember/library-tsconfig@1.1.3':
+    resolution: {integrity: sha512-4cKJ38VEcm4mYmontK9BCpQgm5GPLgAeXqd6PqTHD8eKN0GTeegxdX4SsSUN/8emmULq/9H/Oh6fp3vM2mFqkA==}
 
   '@ember/optional-features@2.3.0':
     resolution: {integrity: sha512-+M8CkPledQEaDbfIlwlq6Phgpm5jdT3a6WVDJk7b/zadw5xAJkuQKVK7DgR0SFgHGiWlyn6a8AU5p2mCA706RA==}
@@ -4415,10 +4412,6 @@ packages:
 
   globals@16.5.0:
     resolution: {integrity: sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==}
-    engines: {node: '>=18'}
-
-  globals@17.0.0:
-    resolution: {integrity: sha512-gv5BeD2EssA793rlFWVPMMCqefTlpusw6/2TbAVMy0FzcG8wKJn4O+NqJ4+XWmmwrayJgw5TzrmWjFgmz1XPqw==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -8396,11 +8389,9 @@ snapshots:
 
   '@ember/app-tsconfig@1.0.3': {}
 
-  '@ember/app-tsconfig@2.0.0': {}
-
   '@ember/edition-utils@1.2.0': {}
 
-  '@ember/library-tsconfig@2.0.0': {}
+  '@ember/library-tsconfig@1.1.3': {}
 
   '@ember/optional-features@2.3.0':
     dependencies:
@@ -12864,8 +12855,6 @@ snapshots:
   globals@15.15.0: {}
 
   globals@16.5.0: {}
-
-  globals@17.0.0: {}
 
   globalthis@1.0.4:
     dependencies:
