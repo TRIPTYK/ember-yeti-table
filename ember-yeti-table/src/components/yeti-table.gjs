@@ -534,8 +534,6 @@ export default class YetiTable extends Component {
   constructor(owner, args) {
     super(...arguments);
 
-    console.log(owner, args);
-
     if (typeof this.args.registerApi === 'function') {
       // eslint-disable-next-line ember/no-runloop
       scheduleOnce('actions', null, this.args.registerApi, this.publicApi);
@@ -556,12 +554,7 @@ export default class YetiTable extends Component {
       let params = this.computeLoadDataParams();
 
       try {
-        console.log("loadData", params);
-
         data = await this.args.loadData(params);
-
-        console.log("loadData end");
-
       } catch (e) {
         console.log(e);
 
