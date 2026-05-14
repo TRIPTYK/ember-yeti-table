@@ -65,32 +65,79 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/quickstart' },
+      { text: 'API', link: '/api/' },
       {
         text: 'GitHub',
         link: 'https://github.com/miguelcobain/ember-yeti-table',
       },
     ],
-    sidebar: [
-      {
-        text: 'Introduction',
-        items: [
-          { text: 'Quickstart', link: '/guide/quickstart' },
-          { text: 'Why Yeti Table?', link: '/guide/why-yeti-table' },
-        ],
-      },
-      {
-        text: 'Guides',
-        items: [
-          { text: 'Defining a table', link: '/guide/general' },
-          { text: 'Sorting', link: '/guide/sorting' },
-          { text: 'Filtering', link: '/guide/filtering' },
-          { text: 'Pagination', link: '/guide/pagination' },
-          { text: 'Async data', link: '/guide/async' },
-          { text: 'Styling', link: '/guide/styling' },
-          { text: 'Configuration', link: '/guide/configuration' },
-        ],
-      },
-    ],
+    sidebar: {
+      '/guide/': [
+        {
+          text: 'Introduction',
+          items: [
+            { text: 'Quickstart', link: '/guide/quickstart' },
+            { text: 'Why Yeti Table?', link: '/guide/why-yeti-table' },
+          ],
+        },
+        {
+          text: 'Guides',
+          items: [
+            { text: 'Defining a table', link: '/guide/general' },
+            { text: 'Sorting', link: '/guide/sorting' },
+            { text: 'Filtering', link: '/guide/filtering' },
+            { text: 'Pagination', link: '/guide/pagination' },
+            { text: 'Async data', link: '/guide/async' },
+            { text: 'Styling', link: '/guide/styling' },
+            { text: 'Configuration', link: '/guide/configuration' },
+          ],
+        },
+      ],
+      '/api/': [
+        {
+          text: 'API Reference',
+          items: [{ text: 'Overview', link: '/api/' }],
+        },
+        {
+          text: 'Top-level',
+          items: [
+            { text: '<YetiTable />', link: '/api/yeti-table' },
+            { text: 'table', link: '/api/table' },
+          ],
+        },
+        {
+          text: 'Head',
+          items: [
+            { text: 'header', link: '/api/header' },
+            { text: 'thead', link: '/api/thead' },
+            { text: 'thead.row', link: '/api/thead-row' },
+            { text: 'thead.row.column', link: '/api/column' },
+            { text: 'thead.row.cell', link: '/api/thead-cell' },
+          ],
+        },
+        {
+          text: 'Body',
+          items: [
+            { text: 'body', link: '/api/body' },
+            { text: 'tbody', link: '/api/tbody' },
+            { text: 'tbody.row', link: '/api/tbody-row' },
+            { text: 'tbody.row.cell', link: '/api/tbody-cell' },
+          ],
+        },
+        {
+          text: 'Foot',
+          items: [
+            { text: 'tfoot', link: '/api/tfoot' },
+            { text: 'tfoot.row', link: '/api/tfoot-row' },
+            { text: 'tfoot.row.cell', link: '/api/tfoot-cell' },
+          ],
+        },
+        {
+          text: 'Pagination',
+          items: [{ text: 'pagination', link: '/api/pagination' }],
+        },
+      ],
+    },
     socialLinks: [
       {
         icon: 'github',
