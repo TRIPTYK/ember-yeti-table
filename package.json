@@ -16,6 +16,11 @@
   "imports": {
     "#src/*": "./src/*"
   },
+  "packageManager": "pnpm@10.11.1",
+  "volta": {
+    "node": "24.13.0",
+    "pnpm": "10.11.1"
+  },
   "exports": {
     ".": {
       "types": "./declarations/index.d.ts",
