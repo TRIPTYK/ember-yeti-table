@@ -180,15 +180,15 @@ importers:
       '@glimmer/tracking':
         specifier: ^1.1.2
         version: 1.1.2
+      '@triptyk/ember-yeti-table':
+        specifier: workspace:*
+        version: link:..
       '@types/markdown-it':
         specifier: ^14.1.2
         version: 14.1.2
       ember-source:
         specifier: ^6.7.0
         version: 6.12.0(@glimmer/component@2.1.1)(rsvp@4.8.5)
-      ember-yeti-table:
-        specifier: workspace:*
-        version: link:..
       markdown-it:
         specifier: ^14.1.1
         version: 14.1.1
