@@ -4,9 +4,9 @@ import Component from '@glimmer/component';
 import { localCopy } from 'tracked-toolbox';
 
 import { on } from '@ember/modifier';
-import { guidFor } from '@ember/object/internals';
 
 import type { PaginationActions, PaginationData, Theme } from '../../types.ts';
+import { uniqueId } from '@ember/helper';
 
 /**
   Simple pagination controls component that is included to help you get started quickly.
@@ -30,8 +30,6 @@ export interface PaginationSignature {
 }
 
 export default class Pagination extends Component<PaginationSignature> {
-  guid = guidFor(this);
-
   isPaginationNumberSelected = helper(([number]: [number]) => {
     return number === this.args.paginationData.pageSize;
   });
@@ -78,19 +76,21 @@ export default class Pagination extends Component<PaginationSignature> {
 
       {{#if this.showPageSizeSelector}}
         <div class={{@theme.pagination.pageSize}}>
-          <label for="page-size-select-{{this.guid}}">Rows per page:</label>
-          <select
-            id="page-size-select-{{this.guid}}"
-            disabled={{@disabled}}
-            {{on "change" this.changePageSize}}
-          >
-            {{#each this.pageSizes as |pageSize|}}
-              <option
-                value={{pageSize}}
-                selected={{this.isPaginationNumberSelected pageSize}}
-              >{{pageSize}}</option>
-            {{/each}}
-          </select>
+          {{#let (uniqueId) as |selectId|}}
+            <label for="page-size-select-{{selectId}}">Rows per page:</label>
+            <select
+              id="page-size-select-{{selectId}}"
+              disabled={{@disabled}}
+              {{on "change" this.changePageSize}}
+            >
+              {{#each this.pageSizes as |pageSize|}}
+                <option
+                  value={{pageSize}}
+                  selected={{this.isPaginationNumberSelected pageSize}}
+                >{{pageSize}}</option>
+              {{/each}}
+            </select>
+          {{/let}}
         </div>
       {{/if}}
 
