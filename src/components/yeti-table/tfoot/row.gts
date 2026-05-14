@@ -28,7 +28,9 @@ export interface TFootRowSignature {
     parent?: unknown;
   };
   Blocks: {
-    default: [{ cell: WithBoundArgs<typeof Cell, 'theme' | 'parent' | 'columns'> }];
+    default: [
+      { cell: WithBoundArgs<typeof Cell, 'theme' | 'parent' | 'columns'> },
+    ];
   };
 }
 

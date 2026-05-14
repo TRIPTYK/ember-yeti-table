@@ -38,63 +38,67 @@ class TestParams {
 import YetiTable from '#src/components/yeti-table';
 import { hash } from '@ember/helper';
 
+function setupTestData() {
+  const testParams = new TestParams();
+
+  testParams.data = [
+    new Person({
+      firstName: 'Miguel',
+      lastName: 'Andrade',
+      points: 1,
+    }),
+    new Person({
+      firstName: 'José',
+      lastName: 'Baderous',
+      points: 2,
+    }),
+    new Person({
+      firstName: 'Maria',
+      lastName: 'Silva',
+      points: 3,
+    }),
+    new Person({
+      firstName: 'Tom',
+      lastName: 'Pale',
+      points: 4,
+    }),
+    new Person({
+      firstName: 'Tom',
+      lastName: 'Dale',
+      points: 5,
+    }),
+  ];
+
+  return testParams;
+}
+
 module('Integration | Component | yeti-table (filtering)', function (hooks) {
   setupRenderingTest(hooks);
 
-  let testParams;
-
-  hooks.beforeEach(function () {
-    testParams = new TestParams();
-
-    testParams.data = [
-      new Person({
-        firstName: 'Miguel',
-        lastName: 'Andrade',
-        points: 1
-      }),
-      new Person({
-        firstName: 'José',
-        lastName: 'Baderous',
-        points: 2
-      }),
-      new Person({
-        firstName: 'Maria',
-        lastName: 'Silva',
-        points: 3
-      }),
-      new Person({
-        firstName: 'Tom',
-        lastName: 'Pale',
-        points: 4
-      }),
-      new Person({
-        firstName: 'Tom',
-        lastName: 'Dale',
-        points: 5
-      })
-    ];
-  });
-
   test('rendering with filter filters rows', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter='Baderous' as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} @filter="Baderous" as |table|>
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 1 });
 
@@ -102,27 +106,37 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('updating filter filters rows', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter={{testParams.filterText}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @filter={{testParams.filterText}}
+          as |table|
+        >
 
-        <table.body />
-        <div>rows length <span data-test-row-length>{{table.rows.length}}</span></div>
-        <div>Total rows <span data-test-total-rows>{{table.totalRows}}</span></div>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+          <div>rows length
+            <span data-test-row-length>{{table.rows.length}}</span></div>
+          <div>Total rows
+            <span data-test-total-rows>{{table.totalRows}}</span></div>
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 5 });
 
@@ -148,30 +162,38 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('updating filter filters rows with nested property names', async function (assert) {
-    testParams.data.forEach(item => {
+    const testParams = setupTestData();
+
+    testParams.data.forEach((item) => {
       item.lastName = {
-        nestedName: item.lastName
+        nestedName: item.lastName,
       };
     });
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter={{testParams.filterText}} as |table|>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @filter={{testParams.filterText}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName.nestedName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName.nestedName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 5 });
 
@@ -191,27 +213,31 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('rendering with filter on column filters rows', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.filterText = 'Baderous';
 
-    await render(<template>
-      <YetiTable @data={{testParams.data}} as |table|>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} as |table|>
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName' @filter={{testParams.filterText}}>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName" @filter={{testParams.filterText}}>
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 1 });
 
@@ -219,25 +245,29 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('updating filter on column filters rows', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName' @filter={{testParams.filterText}}>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} as |table|>
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName" @filter={{testParams.filterText}}>
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 5 });
 
@@ -256,28 +286,32 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('rendering with filter on multiple column filters rows correctly', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.filterFirst = 'Tom';
     testParams.filterLast = '';
 
-    await render(<template>
-      <YetiTable @data={{testParams.data}} as |table|>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} as |table|>
 
-        <table.header as |header|>
-          <header.column @prop='firstName' @filter={{testParams.filterFirst}}>
-            First name
-          </header.column>
-          <header.column @prop='lastName' @filter={{testParams.filterLast}}>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName" @filter={{testParams.filterFirst}}>
+              First name
+            </header.column>
+            <header.column @prop="lastName" @filter={{testParams.filterLast}}>
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 2 });
 
@@ -294,25 +328,29 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('changing a filtered property updates table', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter='Tom' as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} @filter="Tom" as |table|>
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 2 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('Tom');
@@ -326,25 +364,34 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('changing a filtered property updates table is ignored correctly', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter='Tom' @ignoreDataChanges={{true}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @filter="Tom"
+          @ignoreDataChanges={{true}}
+          as |table|
+        >
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 2 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('Tom');
@@ -359,6 +406,8 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('custom filter function', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.filter = (row, filter) => {
       let [prop, text] = filter.split(':');
 
@@ -372,30 +421,32 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
 
     testParams.filterText = 'firstName:tom';
 
-    await render(<template>
-      <YetiTable
-        @data={{testParams.data}}
-        @filterFunction={{testParams.filter}}
-        @filterUsing={{testParams.filterText}}
-        as |table|
-      >
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @filterFunction={{testParams.filter}}
+          @filterUsing={{testParams.filterText}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 2 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('Tom');
@@ -409,6 +460,8 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('custom filter function and filterUsing', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.filter = (row, { min, max }) => {
       let points = row.points;
       return points >= min && points <= max;
@@ -417,30 +470,32 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
     testParams.min = 0;
     testParams.max = 100;
 
-    await render(<template>
-      <YetiTable
-        @data={{testParams.data}}
-        @filterUsing={{hash min=testParams.min max=testParams.max}}
-        @filterFunction={{testParams.filter}}
-        as |table|
-      >
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @filterUsing={{hash min=testParams.min max=testParams.max}}
+          @filterFunction={{testParams.filter}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 5 });
 
@@ -453,6 +508,8 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('custom filter function and filterUsing on column', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.filter = (points, { min, max }) => {
       return points >= min && points <= max;
     };
@@ -460,29 +517,31 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
     testParams.min = 0;
     testParams.max = 100;
 
-    await render(<template>
-      <YetiTable @data={{testParams.data}} as |table|>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} as |table|>
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column
-            @prop='points'
-            @filterUsing={{hash min=testParams.min max=testParams.max}}
-            @filterFunction={{testParams.filter}}
-          >
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column
+              @prop="points"
+              @filterUsing={{hash min=testParams.min max=testParams.max}}
+              @filterFunction={{testParams.filter}}
+            >
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 5 });
 
@@ -495,28 +554,32 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   });
 
   test('Filtering works when a column header does not have a property', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @filter='Baderous' as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-          <header.column>
-            Test blank column
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable @data={{testParams.data}} @filter="Baderous" as |table|>
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+            <header.column>
+              Test blank column
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 1 });
 

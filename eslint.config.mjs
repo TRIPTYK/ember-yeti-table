@@ -33,12 +33,30 @@ const tsParserOptions = {
 };
 
 export default defineConfig([
-  globalIgnores(['dist/', 'dist-*/', 'declarations/', 'coverage/', '!**/.*']),
+  globalIgnores([
+    'dist/',
+    'dist-*/',
+    'declarations/',
+    'coverage/',
+    'docs/',
+    '!**/.*',
+  ]),
   js.configs.recommended,
   prettier,
   ember.configs.base,
   ember.configs.gjs,
   ember.configs.gts,
+  {
+    ignores: [
+      'dist/',
+      'dist-*/',
+      'declarations/',
+      'node_modules/',
+      'coverage/',
+      'docs/',
+      '!**/.*',
+    ],
+  },
   /**
    * https://eslint.org/docs/latest/use/configure/configuration-files#configuring-linter-options
    */

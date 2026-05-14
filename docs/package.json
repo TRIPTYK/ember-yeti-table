@@ -17,6 +17,7 @@
     "@types/markdown-it": "^14.1.2",
     "ember-source": "^6.7.0",
     "@triptyk/ember-yeti-table": "workspace:*",
+    "ember-yeti-table": "workspace:@triptyk/ember-yeti-table@*",
     "markdown-it": "^14.1.1",
     "vite-plugin-ember": "^0.4.0",
     "vitepress": "^1.6.4",

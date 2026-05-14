@@ -5,15 +5,9 @@ export interface Sort {
   direction: SortDirection;
 }
 
-export type FilterFunction = (
-  value: unknown,
-  filterUsing?: unknown,
-) => boolean;
+export type FilterFunction = (value: unknown, filterUsing?: unknown) => boolean;
 
-export type RowFilterFunction = (
-  row: Row,
-  filterUsing?: unknown,
-) => boolean;
+export type RowFilterFunction = (row: Row, filterUsing?: unknown) => boolean;
 
 export type Row = Record<string, unknown>;
 
@@ -84,7 +78,10 @@ export interface PaginationActions {
 
 export interface LoadDataParams {
   paginationData?: PaginationData;
-  sortData: Array<{ prop: string | undefined; direction: SortDirection | null | undefined }>;
+  sortData: Array<{
+    prop: string | undefined;
+    direction: SortDirection | null | undefined;
+  }>;
   filterData: {
     filter: string;
     filterUsing: unknown;

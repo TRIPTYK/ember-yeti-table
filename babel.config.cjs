@@ -25,9 +25,7 @@ module.exports = {
         onlyRemoveTypeImports: true,
       },
     ],
-    [
-      'ember-concurrency/async-arrow-task-transform'
-    ],
+    ['ember-concurrency/async-arrow-task-transform'],
     [
       'babel-plugin-ember-template-compilation',
       {

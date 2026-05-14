@@ -6,11 +6,7 @@ import { localCopy } from 'tracked-toolbox';
 import { on } from '@ember/modifier';
 import { guidFor } from '@ember/object/internals';
 
-import type {
-  PaginationActions,
-  PaginationData,
-  Theme,
-} from '../../types.ts';
+import type { PaginationActions, PaginationData, Theme } from '../../types.ts';
 
 /**
   Simple pagination controls component that is included to help you get started quickly.

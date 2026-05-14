@@ -33,7 +33,9 @@ export interface TBodyRowSignature {
     onClick?: RowClickHandler;
   };
   Blocks: {
-    default: [{ cell: WithBoundArgs<typeof Cell, 'theme' | 'parent' | 'columns'> }];
+    default: [
+      { cell: WithBoundArgs<typeof Cell, 'theme' | 'parent' | 'columns'> },
+    ];
   };
 }
 

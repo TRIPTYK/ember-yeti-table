@@ -29,18 +29,18 @@
 }
 
 .yeti-table-sortable::after {
-  content: ' ⇅';
+  content: " ⇅";
   opacity: 0.4;
   font-size: 0.85em;
 }
 
 .yeti-table-sorted-asc::after {
-  content: ' ▲';
+  content: " ▲";
   opacity: 1;
 }
 
 .yeti-table-sorted-desc::after {
-  content: ' ▼';
+  content: " ▼";
   opacity: 1;
 }
 

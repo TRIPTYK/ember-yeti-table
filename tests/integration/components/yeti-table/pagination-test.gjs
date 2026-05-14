@@ -21,71 +21,89 @@ import YetiTable from '#src/components/yeti-table';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 
+function setupTestData() {
+  const testParams = new TestParams();
+
+  const numberOfRows = 40;
+
+  testParams.data = Array.from(Array(numberOfRows), (_, i) => {
+    return {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      points: i,
+    };
+  });
+
+  return testParams;
+}
+
 module('Integration | Component | yeti-table (pagination)', function (hooks) {
   setupRenderingTest(hooks);
 
-  let testParams;
-
-  hooks.beforeEach(function () {
-    testParams = new TestParams();
-
-    let numberOfRows = 40;
-
-    testParams.data = Array.from(Array(numberOfRows), (_, i) => {
-      return {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        points: i
-      };
-    });
-  });
-
   test('when using pagination, it does not render more than pageSize rows', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @pagination={{true}} @pageSize={{15}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          as |table|
+        >
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
   });
 
   test('updating pageSize updates the number of rows', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.pageSize = 15;
 
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @pagination={{true}} @pageSize={{testParams.pageSize}} as |table|>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{testParams.pageSize}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
 
@@ -96,25 +114,35 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('rendering with initial pageNumber, renders the correct page', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @pagination={{true}} @pageSize={{15}} @pageNumber={{2}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          @pageNumber={{2}}
+          as |table|
+        >
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
 
@@ -122,33 +150,37 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('updating pageNumber updates the displayed rows', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.pageNumber = 1;
 
-    await render(<template>
-      <YetiTable
-        @data={{testParams.data}}
-        @pagination={{true}}
-        @pageSize={{15}}
-        @pageNumber={{testParams.pageNumber}}
-        as |table|
-      >
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          @pageNumber={{testParams.pageNumber}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');
@@ -162,34 +194,38 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('updating pageSize to make the current pageNumber out of bounds also updates the pageNumber', async function (assert) {
+    const testParams = setupTestData();
+
     testParams.pageNumber = 4;
     testParams.pageSize = 10;
 
-    await render(<template>
-      <YetiTable
-        @data={{testParams.data}}
-        @pagination={{true}}
-        @pageSize={{testParams.pageSize}}
-        @pageNumber={{testParams.pageNumber}}
-        as |table|
-      >
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{testParams.pageSize}}
+          @pageNumber={{testParams.pageNumber}}
+          as |table|
+        >
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <table.body />
+          <table.body />
 
-      </YetiTable>
-    </template>);
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 10 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('30');
@@ -203,45 +239,70 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('using yield actions works to change pages', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @pagination={{true}} @pageSize={{15}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          as |table|
+        >
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <button id='previous' type='button' {{on 'click' table.actions.previousPage}}>
-          Previous
-        </button>
+          <table.body />
 
-        <button id='next' type='button' {{on 'click' table.actions.nextPage}}>
-          Next
-        </button>
+          <button
+            id="previous"
+            type="button"
+            {{on "click" table.actions.previousPage}}
+          >
+            Previous
+          </button>
 
-        <button id='goToPage1' type='button' {{on 'click' (fn table.actions.goToPage 2)}}>
-          2
-        </button>
+          <button id="next" type="button" {{on "click" table.actions.nextPage}}>
+            Next
+          </button>
 
-        <button id='goToPage2' type='button' {{on 'click' (fn table.actions.goToPage 2000)}}>
-          2000
-        </button>
+          <button
+            id="goToPage1"
+            type="button"
+            {{on "click" (fn table.actions.goToPage 2)}}
+          >
+            2
+          </button>
 
-        <button id='goToPage3' type='button' {{on 'click' (fn table.actions.goToPage -2000)}}>
-          -2000
-        </button>
+          <button
+            id="goToPage2"
+            type="button"
+            {{on "click" (fn table.actions.goToPage 2000)}}
+          >
+            2000
+          </button>
 
-      </YetiTable>
-    </template>);
+          <button
+            id="goToPage3"
+            type="button"
+            {{on "click" (fn table.actions.goToPage -2000)}}
+          >
+            -2000
+          </button>
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');
@@ -273,51 +334,62 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('yielded paginationData is correct', async function (assert) {
-    await render(<template>
-      <YetiTable @data={{testParams.data}} @pagination={{true}} @pageSize={{15}} as |table|>
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
-
-        <table.body />
-
-        <button
-          id='previous'
-          type='button'
-          disabled={{table.paginationData.isFirstPage}}
-          {{on 'click' table.actions.previousPage}}
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          as |table|
         >
-          Previous
-        </button>
 
-        <button
-          id='next'
-          type='button'
-          disabled={{table.paginationData.isLastPage}}
-          {{on 'click' table.actions.nextPage}}
-        >
-          Next
-        </button>
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-        <div id='pageSize'>{{table.paginationData.pageSize}}</div>
-        <div id='pageNumber'>{{table.paginationData.pageNumber}} of {{table.paginationData.totalPages}}</div>
-        <div id='pageStart'>{{table.paginationData.pageStart}}
-          to
-          {{table.paginationData.pageEnd}}
-          of
-          {{table.paginationData.totalRows}}</div>
+          <table.body />
 
-      </YetiTable>
-    </template>);
+          <button
+            id="previous"
+            type="button"
+            disabled={{table.paginationData.isFirstPage}}
+            {{on "click" table.actions.previousPage}}
+          >
+            Previous
+          </button>
+
+          <button
+            id="next"
+            type="button"
+            disabled={{table.paginationData.isLastPage}}
+            {{on "click" table.actions.nextPage}}
+          >
+            Next
+          </button>
+
+          <div id="pageSize">{{table.paginationData.pageSize}}</div>
+          <div id="pageNumber">{{table.paginationData.pageNumber}}
+            of
+            {{table.paginationData.totalPages}}</div>
+          <div id="pageStart">{{table.paginationData.pageStart}}
+            to
+            {{table.paginationData.pageEnd}}
+            of
+            {{table.paginationData.totalRows}}</div>
+
+        </YetiTable>
+      </template>,
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');
@@ -350,33 +422,41 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
   });
 
   test('using registered api to update pagination state works', async function (assert) {
-    await render(<template>
-      <YetiTable
-        @data={{testParams.data}}
-        @pagination={{true}}
-        @pageSize={{15}}
-        @registerApi={{fn (mut testParams.tableApi)}}
-        as |table|
-      >
+    const testParams = setupTestData();
 
-        <table.header as |header|>
-          <header.column @prop='firstName'>
-            First name
-          </header.column>
-          <header.column @prop='lastName'>
-            Last name
-          </header.column>
-          <header.column @prop='points'>
-            Points
-          </header.column>
-        </table.header>
+    await render(
+      <template>
+        <YetiTable
+          @data={{testParams.data}}
+          @pagination={{true}}
+          @pageSize={{15}}
+          @registerApi={{fn (mut testParams.tableApi)}}
+          as |table|
+        >
 
-        <table.body />
+          <table.header as |header|>
+            <header.column @prop="firstName">
+              First name
+            </header.column>
+            <header.column @prop="lastName">
+              Last name
+            </header.column>
+            <header.column @prop="points">
+              Points
+            </header.column>
+          </table.header>
 
-      </YetiTable>
-    </template>);
+          <table.body />
 
-    assert.strictEqual(typeof testParams.tableApi, 'object', 'table api was registered');
+        </YetiTable>
+      </template>,
+    );
+
+    assert.strictEqual(
+      typeof testParams.tableApi,
+      'object',
+      'table api was registered',
+    );
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');

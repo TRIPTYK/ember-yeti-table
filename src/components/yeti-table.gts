@@ -62,10 +62,7 @@ interface UpdateTotalRowsSignature {
 }
 
 class UpdateTotalRows extends Helper<UpdateTotalRowsSignature> {
-  compute(
-    positional: [number | undefined],
-    { context }: HelperNamed,
-  ): '' {
+  compute(positional: [number | undefined], { context }: HelperNamed): '' {
     context.totalRows = positional[0];
     notifyPropertyChange(context, 'normalizedTotalRows');
     notifyPropertyChange(context, 'paginationData');
@@ -79,10 +76,7 @@ interface UpdateFilterSignature {
 }
 
 class UpdateFilter extends Helper<UpdateFilterSignature> {
-  compute(
-    positional: [string | undefined],
-    { context }: HelperNamed,
-  ): '' {
+  compute(positional: [string | undefined], { context }: HelperNamed): '' {
     context.filter = positional[0] || '';
     return '';
   }
@@ -121,7 +115,9 @@ class ProcessedData extends Helper<ProcessedDataSignature> {
   }
 }
 
-export type YetiTableLoadData = (params: LoadDataParams) => Row[] | Promise<Row[]>;
+export type YetiTableLoadData = (
+  params: LoadDataParams,
+) => Row[] | Promise<Row[]>;
 
 export interface YetiTableSignature {
   Element: HTMLElement;
@@ -234,13 +230,14 @@ export default class YetiTable extends Component<YetiTableSignature> {
   }
 
   config: Record<string, unknown> =
-    ((
-      getOwner(this) as {
-        resolveRegistration?: (name: string) => unknown;
-      } | null
-    )?.resolveRegistration?.('config:environment') as
-      | Record<string, Record<string, unknown>>
-      | undefined
+    (
+      (
+        getOwner(this) as {
+          resolveRegistration?: (name: string) => unknown;
+        } | null
+      )?.resolveRegistration?.('config:environment') as
+        | Record<string, Record<string, unknown>>
+        | undefined
     )?.['ember-yeti-table'] || {};
 
   get normalizedTotalRows(): number {
@@ -326,10 +323,7 @@ export default class YetiTable extends Component<YetiTableSignature> {
           throw e;
         }
       }
-    } else if (
-      data &&
-      typeof (data as Promise<Row[]>).then === 'function'
-    ) {
+    } else if (data && typeof (data as Promise<Row[]>).then === 'function') {
       data = await data;
     }
 

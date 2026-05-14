@@ -6,7 +6,12 @@ export default class PaginationSimple extends Component {
   data = peopleLarge;
 
   <template>
-    <YetiTable @data={{this.data}} @pagination={{true}} @pageSize={{10}} as |table|>
+    <YetiTable
+      @data={{this.data}}
+      @pagination={{true}}
+      @pageSize={{10}}
+      as |table|
+    >
       <table.header as |header|>
         <header.column @prop="firstName">First name</header.column>
         <header.column @prop="lastName">Last name</header.column>

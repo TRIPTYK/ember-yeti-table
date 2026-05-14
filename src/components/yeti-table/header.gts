@@ -8,11 +8,7 @@ import type { WithBoundArgs } from '@glint/template';
 import THead from './thead/row/column.gts';
 import type Column from './thead/row/column.gts';
 import type { ColumnParent } from './thead/row/column.gts';
-import type {
-  ColumnDefinition,
-  SortDirection,
-  Theme,
-} from '../../types.ts';
+import type { ColumnDefinition, SortDirection, Theme } from '../../types.ts';
 
 /**
   Renders a `<thead>` element and yields the column component.
