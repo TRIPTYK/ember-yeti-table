@@ -13,6 +13,9 @@
   ],
   "compilerOptions": {
     "rootDir": ".",
+    "paths": {
+      "#src/*": ["./src/*"]
+    },
     "types": [
       "ember-source/types",
       "vite/client",

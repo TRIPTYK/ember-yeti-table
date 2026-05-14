@@ -11,20 +11,31 @@ import DEFAULT_THEME from '#src/themes/default-theme';
 
 import YetiTable from '#src/components/yeti-table';
 
+import type { Row, SortDirection } from '#src/types';
+import type { Comparator } from '#src/utils/sorting-utils';
+
+type SortingEntry = { prop: string; direction: SortDirection };
+type CustomSortFn = (
+  a: Row,
+  b: Row,
+  sortings: SortingEntry[],
+  compareFn: Comparator,
+) => number;
+
 class TestParams {
   @tracked
-  data;
+  data?: Row[];
   @tracked
-  sort;
+  sort?: SortDirection | null;
   @tracked
-  firstNameSort;
+  firstNameSort?: SortDirection | null;
   @tracked
-  lastNameSort;
+  lastNameSort?: SortDirection | null;
   @tracked
-  customSort;
+  customSort?: CustomSortFn;
 }
 
-function setupTestData() {
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   testParams.data = [
@@ -196,7 +207,7 @@ module('Integration | Component | yeti-table (sorting)', function (hooks) {
   test('default sort works with nested property names', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.data.forEach((item) => {
+    testParams.data!.forEach((item) => {
       item.firstName = {
         nestedName: item.firstName,
       };
@@ -653,7 +664,7 @@ module('Integration | Component | yeti-table (sorting)', function (hooks) {
     assert.dom('tbody tr:nth-child(4) td:nth-child(1)').hasText('Tom');
     assert.dom('tbody tr:nth-child(5) td:nth-child(1)').hasText('Tom');
 
-    set(testParams.data[3], 'firstName', '123');
+    set(testParams.data![3]!, 'firstName', '123');
     await settled();
 
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('123');
@@ -698,7 +709,7 @@ module('Integration | Component | yeti-table (sorting)', function (hooks) {
     assert.dom('tbody tr:nth-child(4) td:nth-child(1)').hasText('Tom');
     assert.dom('tbody tr:nth-child(5) td:nth-child(1)').hasText('Tom');
 
-    set(testParams.data[3], 'firstName', '123');
+    set(testParams.data![3]!, 'firstName', '123');
     await settled();
 
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('José');
@@ -752,23 +763,24 @@ module('Integration | Component | yeti-table (sorting)', function (hooks) {
   test('sortFunction function works', async function (assert) {
     const testParams = setupTestData();
 
-    function pointsComparator(a, b) {
-      if (a > b) {
+    const pointsComparator: Comparator = (a, b) => {
+      if ((a as number) > (b as number)) {
         return 1;
-      } else if (a < b) {
+      } else if ((a as number) < (b as number)) {
         return -1;
       }
 
       return 0;
-    }
+    };
 
     testParams.customSort = (a, b, sortings) => {
-      let compareValue;
+      let compareValue = 0;
 
-      for (let { prop, direction } of sortings) {
-        let comparator = prop === 'points' ? pointsComparator : compare;
-        let valueA = get(a, prop);
-        let valueB = get(b, prop);
+      for (const { prop, direction } of sortings) {
+        const comparator: Comparator =
+          prop === 'points' ? pointsComparator : compare;
+        const valueA = get(a, prop);
+        const valueB = get(b, prop);
 
         compareValue =
           direction === 'asc'

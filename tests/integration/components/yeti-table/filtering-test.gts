@@ -1,17 +1,25 @@
 import { render, settled } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
-
+import YetiTable from '#src/components/yeti-table';
+import { hash } from '@ember/helper';
 import { get } from '@ember/object';
-
 import { tracked } from '@glimmer/tracking';
+import type { FilterFunction, Row, RowFilterFunction } from '#src/types';
+
+interface PersonArgs {
+  firstName: string | number;
+  lastName: string | { nestedName: string };
+  points: number;
+}
 
 class Person {
-  @tracked firstName;
-  @tracked lastName;
-  @tracked points;
+  @tracked firstName: string | number;
+  @tracked lastName: string | { nestedName: string };
+  @tracked points: number;
+  [key: string]: unknown;
 
-  constructor({ firstName, lastName, points }) {
+  constructor({ firstName, lastName, points }: PersonArgs) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.points = points;
@@ -20,25 +28,24 @@ class Person {
 
 class TestParams {
   @tracked
-  data;
+  data?: Person[];
   @tracked
-  filterText;
+  filterText?: string;
   @tracked
-  filterFirst;
+  filterFirst?: string;
   @tracked
-  filterLast;
+  filterLast?: string;
   @tracked
-  filter;
+  filter?: FilterFunction;
   @tracked
-  min;
+  rowFilter?: RowFilterFunction;
   @tracked
-  max;
+  min?: number;
+  @tracked
+  max?: number;
 }
 
-import YetiTable from '#src/components/yeti-table';
-import { hash } from '@ember/helper';
-
-function setupTestData() {
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   testParams.data = [
@@ -164,9 +171,9 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   test('updating filter filters rows with nested property names', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.data.forEach((item) => {
+    testParams.data!.forEach((item) => {
       item.lastName = {
-        nestedName: item.lastName,
+        nestedName: item.lastName as string,
       };
     });
     await render(
@@ -356,7 +363,7 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('Tom');
     assert.dom('tbody tr:nth-child(2) td:nth-child(1)').hasText('Tom');
 
-    testParams.data[3].firstName = 123;
+    testParams.data![3]!.firstName = 123;
     await settled();
 
     assert.dom('tbody tr').exists({ count: 1 });
@@ -397,7 +404,7 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
     assert.dom('tbody tr:nth-child(1) td:nth-child(1)').hasText('Tom');
     assert.dom('tbody tr:nth-child(2) td:nth-child(1)').hasText('Tom');
 
-    testParams.data[3].firstName = '123';
+    testParams.data![3]!.firstName = '123';
     await settled();
 
     assert.dom('tbody tr').exists({ count: 2 });
@@ -408,11 +415,11 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   test('custom filter function', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.filter = (row, filter) => {
-      let [prop, text] = filter.split(':');
+    testParams.rowFilter = (row: Row, filter: unknown) => {
+      const [prop, text] = String(filter).split(':');
 
       if (prop && text) {
-        let value = get(row, prop) || '';
+        const value = (get(row, prop) as string | undefined) ?? '';
         return value.toUpperCase().includes(text.toUpperCase());
       } else {
         return true;
@@ -425,7 +432,7 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
       <template>
         <YetiTable
           @data={{testParams.data}}
-          @filterFunction={{testParams.filter}}
+          @filterFunction={{testParams.rowFilter}}
           @filterUsing={{testParams.filterText}}
           as |table|
         >
@@ -462,9 +469,10 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   test('custom filter function and filterUsing', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.filter = (row, { min, max }) => {
-      let points = row.points;
-      return points >= min && points <= max;
+    testParams.rowFilter = (row: Row, filterUsing: unknown) => {
+      const points = row.points as number;
+      const range = filterUsing as { min: number; max: number };
+      return points >= range.min && points <= range.max;
     };
 
     testParams.min = 0;
@@ -475,7 +483,7 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
         <YetiTable
           @data={{testParams.data}}
           @filterUsing={{hash min=testParams.min max=testParams.max}}
-          @filterFunction={{testParams.filter}}
+          @filterFunction={{testParams.rowFilter}}
           as |table|
         >
 
@@ -510,9 +518,13 @@ module('Integration | Component | yeti-table (filtering)', function (hooks) {
   test('custom filter function and filterUsing on column', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.filter = (points, { min, max }) => {
-      return points >= min && points <= max;
-    };
+    testParams.filter = ((
+      points: unknown,
+      filterUsing: { min: number; max: number },
+    ) => {
+      const n = points as number;
+      return n >= filterUsing.min && n <= filterUsing.max;
+    }) as FilterFunction;
 
     testParams.min = 0;
     testParams.max = 100;

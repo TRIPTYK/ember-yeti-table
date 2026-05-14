@@ -8,14 +8,16 @@ import DEFAULT_THEME from '#src/themes/default-theme';
 
 import YetiTable from '#src/components/yeti-table';
 
+import type { Row, Theme } from '#src/types';
+
 class TestParams {
   @tracked
-  data;
+  data?: Row[];
   @tracked
-  theme;
+  theme?: Partial<Theme>;
 }
 
-function setupTestData() {
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   testParams.theme = {
@@ -93,12 +95,12 @@ module('Integration | Component | yeti-table (theme)', function (hooks) {
       </template>,
     );
 
-    assert.dom('table').hasClass(testParams.theme.table);
-    assert.dom('thead').hasClass(testParams.theme.thead);
-    assert.dom('thead tr').hasClass(testParams.theme.theadRow);
-    assert.dom('thead tr th').hasClass(testParams.theme.theadCell);
-    assert.dom('tbody tr').hasClass(testParams.theme.tbodyRow);
-    assert.dom('tbody tr td').hasClass(testParams.theme.tbodyCell);
+    assert.dom('table').hasClass(testParams.theme!.table!);
+    assert.dom('thead').hasClass(testParams.theme!.thead!);
+    assert.dom('thead tr').hasClass(testParams.theme!.theadRow!);
+    assert.dom('thead tr th').hasClass(testParams.theme!.theadCell!);
+    assert.dom('tbody tr').hasClass(testParams.theme!.tbodyRow!);
+    assert.dom('tbody tr td').hasClass(testParams.theme!.tbodyCell!);
   });
 
   test('renders table with correct theme (head)', async function (assert) {
@@ -140,18 +142,18 @@ module('Integration | Component | yeti-table (theme)', function (hooks) {
       </template>,
     );
 
-    assert.dom('table').hasClass(testParams.theme.table);
+    assert.dom('table').hasClass(testParams.theme!.table!);
 
-    assert.dom('thead').hasClass(testParams.theme.thead);
-    assert.dom('thead tr').hasClass(testParams.theme.theadRow);
-    assert.dom('thead tr th').hasClass(testParams.theme.theadCell);
+    assert.dom('thead').hasClass(testParams.theme!.thead!);
+    assert.dom('thead tr').hasClass(testParams.theme!.theadRow!);
+    assert.dom('thead tr th').hasClass(testParams.theme!.theadCell!);
 
-    assert.dom('tbody tr').hasClass(testParams.theme.tbodyRow);
-    assert.dom('tbody tr td').hasClass(testParams.theme.tbodyCell);
+    assert.dom('tbody tr').hasClass(testParams.theme!.tbodyRow!);
+    assert.dom('tbody tr td').hasClass(testParams.theme!.tbodyCell!);
 
-    assert.dom('tfoot').hasClass(testParams.theme.tfoot);
-    assert.dom('tfoot tr').hasClass(testParams.theme.tfootRow);
-    assert.dom('tfoot tr td').hasClass(testParams.theme.tfootCell);
+    assert.dom('tfoot').hasClass(testParams.theme!.tfoot!);
+    assert.dom('tfoot tr').hasClass(testParams.theme!.tfootRow!);
+    assert.dom('tfoot tr td').hasClass(testParams.theme!.tfootCell!);
 
     assert
       .dom('tfoot > tr > td > div')
@@ -176,10 +178,10 @@ module('Integration | Component | yeti-table (theme)', function (hooks) {
     testParams.theme = {
       sorting: {
         columnSortable: 'custom-sortable',
-      },
+      } as Theme['sorting'],
       pagination: {
         next: 'custom-next',
-      },
+      } as Theme['pagination'],
     };
 
     await render(
@@ -224,7 +226,7 @@ module('Integration | Component | yeti-table (theme)', function (hooks) {
       .hasClass(DEFAULT_THEME.sorting.columnSorted);
     assert
       .dom('thead tr:nth-child(1) th:nth-child(1)')
-      .hasClass(testParams.theme.sorting.columnSortable);
+      .hasClass(testParams.theme.sorting!.columnSortable);
     assert
       .dom('thead tr:nth-child(1) th:nth-child(1)')
       .doesNotHaveClass(DEFAULT_THEME.sorting.columnSortable);
@@ -235,7 +237,7 @@ module('Integration | Component | yeti-table (theme)', function (hooks) {
       .hasClass(DEFAULT_THEME.pagination.previous);
     assert
       .dom('tfoot > tr > td > div > button:last-child')
-      .hasClass(testParams.theme.pagination.next);
+      .hasClass(testParams.theme.pagination!.next);
     assert
       .dom('tfoot > tr > td > div > button:last-child')
       .doesNotHaveClass(DEFAULT_THEME.pagination.next);

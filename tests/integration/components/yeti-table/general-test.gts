@@ -1,33 +1,56 @@
 import { render, settled, waitFor } from '@ember/test-helpers';
 import { click } from '@ember/test-helpers';
+import type { RenderingTestContext } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 
 import { tracked } from '@glimmer/tracking';
 
 import sinon from 'sinon';
+import type { SinonSpy } from 'sinon';
 
 import DEFAULT_THEME from '#src/themes/default-theme';
 
 import YetiTable from '#src/components/yeti-table';
 import { fn, get } from '@ember/helper';
+import { toContentValue, getContentValue } from '../../../content-value';
+
+interface TableApi {
+  previousPage: () => void;
+  nextPage: () => void;
+  goToPage: (n: number) => void;
+  changePageSize: (n: number | string) => void;
+  reloadData: () => Promise<unknown>;
+}
+
+interface ColumnLike {
+  prop?: string;
+}
+
+interface Person {
+  firstName: string;
+  lastName: string;
+  points: number;
+  address?: { city: string };
+  [key: string]: unknown;
+}
 
 class TestParams {
   @tracked
-  data;
+  data: Person[] = [];
   @tracked
-  rowClicked;
+  rowClicked: (person: Person) => void = () => {};
   @tracked
-  visible;
+  visible?: boolean;
   @tracked
-  isColumnVisible;
+  isColumnVisible?: (column: ColumnLike) => boolean;
   @tracked
-  registerApi;
+  registerApi?: SinonSpy;
   @tracked
-  tableApi;
+  tableApi?: TableApi;
 }
 
-function setupTestData() {
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   testParams.data = [
@@ -136,13 +159,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
             <body.row as |row|>
               <row.cell>
                 Custom
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell as |column|>
-                {{get person column.prop}}
+                {{getContentValue person column.prop}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -186,13 +209,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
               <body.row as |row|>
                 <row.cell>
                   Custom
-                  {{person.firstName}}
+                  {{toContentValue person.firstName}}
                 </row.cell>
                 <row.cell>
-                  {{person.lastName}}
+                  {{toContentValue person.lastName}}
                 </row.cell>
                 <row.cell>
-                  {{person.points}}
+                  {{toContentValue person.points}}
                 </row.cell>
               </body.row>
             {{/each}}
@@ -236,13 +259,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
             <body.row as |row|>
               <row.cell>
                 Custom
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.address.city}}
+                {{toContentValue (get person "address.city")}}
               </row.cell>
             </body.row>
           </table.body>
@@ -336,7 +359,7 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
     assert.dom('thead > tr').hasClass('custom-tr-class');
   });
 
-  test('columnClass applies a class to each column with blockless body', async function (assert) {
+  test('columnClass applies a class to each column with blockless body', async function (this: RenderingTestContext, assert) {
     const testParams = setupTestData();
 
     await render(
@@ -361,13 +384,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
       </template>,
     );
 
-    let rows = this.element.querySelectorAll('tbody tr td:nth-child(2)');
+    const rows = this.element.querySelectorAll('tbody tr td:nth-child(2)');
     rows.forEach((r) => {
       assert.dom(r).hasClass('custom-column-class');
     });
   });
 
-  test('columnClass applies a class to each column with block body', async function (assert) {
+  test('columnClass applies a class to each column with block body', async function (this: RenderingTestContext, assert) {
     const testParams = setupTestData();
 
     await render(
@@ -390,13 +413,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
             <body.row as |row|>
               <row.cell>
                 Custom
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -405,7 +428,7 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
       </template>,
     );
 
-    let rows = this.element.querySelectorAll('tbody tr td:nth-child(2)');
+    const rows = this.element.querySelectorAll('tbody tr td:nth-child(2)');
     rows.forEach((r) => {
       assert.dom(r).hasClass('custom-column-class');
     });
@@ -480,13 +503,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
             <body.row @onClick={{fn testParams.rowClicked person}} as |row|>
               <row.cell>
                 Custom
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -507,13 +530,15 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
   test('renders with data with arrays', async function (assert) {
     const testParams = setupTestData();
 
-    testParams.data = [
+    const arrayData = [
       ['Miguel', 'Andrade', 1, 2, 3, 4],
       ['José', 'Baderous', 1, 2, 3, 4],
       ['Maria', 'Silva', 1, 2, 3, 4],
       ['Tom', 'Dale', 1, 2, 3, 4],
       ['Yehuda', 'Katz', 1, 2, 3, 4],
     ];
+
+    testParams.data = arrayData as unknown as Person[];
 
     await render(
       <template>
@@ -549,13 +574,11 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
     assert.dom('table').exists({ count: 1 });
     assert.dom('thead').exists({ count: 1 });
     assert.dom('tbody').exists({ count: 1 });
-    assert.dom('tbody tr').exists({ count: testParams.data.length });
-    assert.dom('th').exists({ count: testParams.data[0].length });
-    assert
-      .dom('td')
-      .exists({ count: testParams.data.length * testParams.data[0].length });
+    assert.dom('tbody tr').exists({ count: arrayData.length });
+    assert.dom('th').exists({ count: arrayData[0]!.length });
+    assert.dom('td').exists({ count: arrayData.length * arrayData[0]!.length });
 
-    testParams.data.forEach((line, row) => {
+    arrayData.forEach((line, row) => {
       line.forEach((data, column) => {
         assert
           .dom(`tbody tr:nth-child(${row + 1}) td:nth-child(${column + 1})`)
@@ -634,13 +657,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
           <table.body as |body person|>
             <body.row as |row|>
               <row.cell>
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -672,7 +695,7 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
     const testParams = setupTestData();
 
     testParams.isColumnVisible = (c) => {
-      return ['firstName', 'points'].includes(c.prop);
+      return ['firstName', 'points'].includes(c.prop ?? '');
     };
 
     await render(
@@ -698,13 +721,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
           <table.body as |body person|>
             <body.row as |row|>
               <row.cell>
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -787,13 +810,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
           <table.body as |body person|>
             <body.row as |row|>
               <row.cell class="cell-class" data-cell="test-cell">
-                {{person.firstName}}
+                {{toContentValue person.firstName}}
               </row.cell>
               <row.cell>
-                {{person.lastName}}
+                {{toContentValue person.lastName}}
               </row.cell>
               <row.cell>
-                {{person.points}}
+                {{toContentValue person.points}}
               </row.cell>
             </body.row>
           </table.body>
@@ -849,13 +872,13 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
               <body.row as |row|>
                 <row.cell>
                   Custom
-                  {{person.firstName}}
+                  {{toContentValue person.firstName}}
                 </row.cell>
                 <row.cell>
-                  {{person.lastName}}
+                  {{toContentValue person.lastName}}
                 </row.cell>
                 <row.cell>
-                  {{person.points}}
+                  {{toContentValue person.points}}
                 </row.cell>
               </body.row>
             </table.body>
@@ -969,7 +992,7 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
     const testParams = setupTestData();
 
     testParams.registerApi = sinon.spy(
-      (table) => (testParams.tableApi = table),
+      (table: TableApi) => (testParams.tableApi = table),
     );
 
     await render(
@@ -1004,27 +1027,27 @@ module('Integration | Component | yeti-table (general)', function (hooks) {
       'table is an object',
     );
     assert.strictEqual(
-      typeof testParams.tableApi.nextPage,
+      typeof testParams.tableApi!.nextPage,
       'function',
       'table.nextPage is a function',
     );
     assert.strictEqual(
-      typeof testParams.tableApi.previousPage,
+      typeof testParams.tableApi!.previousPage,
       'function',
       'table.previousPage is a function',
     );
     assert.strictEqual(
-      typeof testParams.tableApi.goToPage,
+      typeof testParams.tableApi!.goToPage,
       'function',
       'table.goToPage is a function',
     );
     assert.strictEqual(
-      typeof testParams.tableApi.changePageSize,
+      typeof testParams.tableApi!.changePageSize,
       'function',
       'table.changePageSize is a function',
     );
     assert.strictEqual(
-      typeof testParams.tableApi.reloadData,
+      typeof testParams.tableApi!.reloadData,
       'function',
       'table.reloadData is a function',
     );

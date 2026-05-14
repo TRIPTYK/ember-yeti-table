@@ -6,22 +6,32 @@ import { tracked } from '@glimmer/tracking';
 
 import { faker } from '@faker-js/faker';
 
+import type { Row } from '#src/types';
+
+interface TableApi {
+  previousPage: () => void;
+  nextPage: () => void;
+  goToPage: (n: number) => void;
+  changePageSize: (n: number | string) => void;
+  reloadData: () => Promise<unknown>;
+}
+
 class TestParams {
   @tracked
-  data;
+  data?: Row[];
   @tracked
-  pageSize;
+  pageSize?: number;
   @tracked
-  pageNumber;
+  pageNumber?: number;
   @tracked
-  tableApi;
+  tableApi?: TableApi;
 }
 
 import YetiTable from '#src/components/yeti-table';
 import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 
-function setupTestData() {
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   const numberOfRows = 40;
@@ -461,31 +471,31 @@ module('Integration | Component | yeti-table (pagination)', function (hooks) {
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');
 
-    testParams.tableApi.nextPage();
+    testParams.tableApi!.nextPage();
     await settled();
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('15');
 
-    testParams.tableApi.previousPage();
+    testParams.tableApi!.previousPage();
     await settled();
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('0');
 
-    testParams.tableApi.goToPage(2);
+    testParams.tableApi!.goToPage(2);
     await settled();
 
     assert.dom('tbody tr').exists({ count: 15 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('15');
 
-    testParams.tableApi.goToPage(2000);
+    testParams.tableApi!.goToPage(2000);
     await settled();
 
     assert.dom('tbody tr').exists({ count: 10 });
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('30');
 
-    testParams.tableApi.goToPage(-2000);
+    testParams.tableApi!.goToPage(-2000);
     await settled();
 
     assert.dom('tbody tr').exists({ count: 15 });

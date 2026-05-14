@@ -4,7 +4,9 @@ import { module, test } from 'qunit';
 import { fn } from '@ember/helper';
 import YetiTable from '#src/components/yeti-table';
 
-const data = [
+import type { Row } from '#src/types';
+
+const data: Row[] = [
   {
     firstName: 'Miguel',
     lastName: 'Andrade',
@@ -91,7 +93,7 @@ module('Integration | Component | yeti-table (a11y)', function (hooks) {
 
   test('clickable rows have role="button"', async function (assert) {
     class TestParams {
-      noop;
+      noop?: boolean;
     }
 
     const testParams = new TestParams();

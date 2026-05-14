@@ -5,6 +5,7 @@ import {
   click,
   waitFor,
 } from '@ember/test-helpers';
+import type { TestContext } from '@ember/test-helpers';
 import { setupRenderingTest } from 'ember-qunit';
 import { module, test } from 'qunit';
 
@@ -13,8 +14,8 @@ import { notifyPropertyChange } from '@ember/object';
 import { runTask } from 'ember-lifeline';
 
 import { timeout, task } from 'ember-concurrency';
-import RSVP from 'rsvp';
 import sinon from 'sinon';
+import type { SinonSpy } from 'sinon';
 
 import {
   sortMultiple,
@@ -27,28 +28,40 @@ import { on } from '@ember/modifier';
 import { fn } from '@ember/helper';
 import perform from 'ember-concurrency/helpers/perform';
 
-class TestParams {
-  @tracked
-  data;
-  @tracked
-  data2;
-  @tracked
-  dataPromise;
-  @tracked
-  loadData;
-  @tracked
-  filterText;
-  @tracked
-  sortDir;
-  @tracked
-  pageNumber;
-  @tracked
-  totalRows;
-  @tracked
-  tableApi;
+import type { LoadDataParams, Row, Sort } from '#src/types';
+
+interface TableApi {
+  previousPage: () => void;
+  nextPage: () => void;
+  goToPage: (n: number) => void;
+  changePageSize: (n: number | string) => void;
+  reloadData: () => Promise<unknown>;
 }
 
-function setupTestData() {
+type LoadDataFn = (params: LoadDataParams) => Promise<Row[]>;
+
+class TestParams {
+  @tracked
+  data?: Row[];
+  @tracked
+  data2?: Row[];
+  @tracked
+  dataPromise?: Row[] | Promise<Row[]>;
+  @tracked
+  loadData?: SinonSpy & LoadDataFn;
+  @tracked
+  filterText?: string;
+  @tracked
+  sortDir?: 'asc' | 'desc' | null;
+  @tracked
+  pageNumber?: number;
+  @tracked
+  totalRows?: number;
+  @tracked
+  tableApi?: TableApi;
+}
+
+function setupTestData(): TestParams {
   const testParams = new TestParams();
 
   testParams.data = [
@@ -113,7 +126,7 @@ function setupTestData() {
 module('Integration | Component | yeti-table (async)', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('passing a promise as `data` works after resolving promise', async function (assert) {
+  test('passing a promise as `data` works after resolving promise', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.dataPromise = [];
@@ -140,11 +153,11 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
       </template>,
     );
 
-    testParams.dataPromise = new RSVP.Promise((resolve) => {
+    testParams.dataPromise = new Promise<Row[]>((resolve) => {
       runTask(
         this,
         () => {
-          resolve(testParams.data);
+          resolve(testParams.data!);
         },
         150,
       );
@@ -157,7 +170,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.dom('tbody tr').exists({ count: 5 });
   });
 
-  test('yielded isLoading boolean is true while promise is not resolved', async function (assert) {
+  test('yielded isLoading boolean is true while promise is not resolved', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.dataPromise = [];
@@ -188,11 +201,11 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
       </template>,
     );
 
-    testParams.dataPromise = new RSVP.Promise((resolve) => {
+    testParams.dataPromise = new Promise<Row[]>((resolve) => {
       runTask(
         this,
         () => {
-          resolve(testParams.data);
+          resolve(testParams.data!);
         },
         150,
       );
@@ -207,7 +220,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.dom('.loading-message').doesNotExist();
   });
 
-  test('updating `data` after passing in a promise ignores first promise, respecting order', async function (assert) {
+  test('updating `data` after passing in a promise ignores first promise, respecting order', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.dataPromise = [];
@@ -234,11 +247,11 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
       </template>,
     );
 
-    testParams.dataPromise = new RSVP.Promise((resolve) => {
+    testParams.dataPromise = new Promise<Row[]>((resolve) => {
       runTask(
         this,
         () => {
-          resolve(testParams.data);
+          resolve(testParams.data!);
         },
         150,
       );
@@ -248,11 +261,11 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
 
     await settled();
 
-    testParams.dataPromise = new RSVP.Promise((resolve) => {
+    testParams.dataPromise = new Promise<Row[]>((resolve) => {
       runTask(
         this,
         () => {
-          resolve(testParams.data2);
+          resolve(testParams.data2!);
         },
         10,
       );
@@ -266,22 +279,22 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.dom('tbody tr:nth-child(1) td:nth-child(3)').hasText('123');
   });
 
-  test('yielded isLoading boolean is true while loadData promise is not resolved', async function (assert) {
+  test('yielded isLoading boolean is true while loadData promise is not resolved', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            resolve(testParams.data);
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
-    render(
+    void render(
       <template>
         <YetiTable @loadData={{testParams.loadData}} as |table|>
 
@@ -316,20 +329,20 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.dom('.loading-message').doesNotExist();
   });
 
-  test('loadData is called with correct parameters', async function (assert) {
+  test('loadData is called with correct parameters', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            resolve(testParams.data);
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -388,18 +401,20 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when updating filter', async function (assert) {
+  test('loadData is called when updating filter', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ filterData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ filterData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let data = testParams.data;
+            let data = testParams.data!;
 
             if (filterData.filter) {
-              data = data.filter((p) => p.lastName.includes(filterData.filter));
+              data = data.filter((p) =>
+                String(p.lastName).includes(filterData.filter),
+              );
             }
 
             resolve(data);
@@ -407,7 +422,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -460,19 +475,24 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when updating sorting', async function (assert) {
+  test('loadData is called when updating sorting', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ sortData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ sortData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let data = testParams.data;
+            let data = testParams.data!;
 
             if (sortData.length > 0) {
               data = mergeSort(data, (itemA, itemB) => {
-                return sortMultiple(itemA, itemB, sortData, compareValues);
+                return sortMultiple(
+                  itemA,
+                  itemB,
+                  sortData as Sort[],
+                  compareValues,
+                );
               });
             }
 
@@ -481,7 +501,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -532,19 +552,24 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when clicking a sortable header', async function (assert) {
+  test('loadData is called when clicking a sortable header', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ sortData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ sortData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let data = testParams.data;
+            let data = testParams.data!;
 
             if (sortData.length > 0) {
               data = mergeSort(data, (itemA, itemB) => {
-                return sortMultiple(itemA, itemB, sortData, compareValues);
+                return sortMultiple(
+                  itemA,
+                  itemB,
+                  sortData as Sort[],
+                  compareValues,
+                );
               });
             }
 
@@ -553,7 +578,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -602,21 +627,21 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when changing page', async function (assert) {
+  test('loadData is called when changing page', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ paginationData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ paginationData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let pages = [testParams.data, testParams.data2];
-            resolve(pages[paginationData.pageNumber - 1]);
+            const pages = [testParams.data!, testParams.data2!];
+            resolve(pages[paginationData!.pageNumber - 1]!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -699,21 +724,21 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when changing page through @pageNumber arg', async function (assert) {
+  test('loadData is called when changing page through @pageNumber arg', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ paginationData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ paginationData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let pages = [testParams.data, testParams.data2];
-            resolve(pages[paginationData.pageNumber - 1]);
+            const pages = [testParams.data!, testParams.data2!];
+            resolve(pages[paginationData!.pageNumber - 1]!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     testParams.pageNumber = 1;
 
@@ -800,21 +825,21 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called when changing page with @onPageNumberChange (see #301)', async function (assert) {
+  test('loadData is called when changing page with @onPageNumberChange (see #301)', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
-    testParams.loadData = sinon.spy(({ paginationData }) => {
-      return new RSVP.Promise((resolve) => {
+    testParams.loadData = sinon.spy(({ paginationData }: LoadDataParams) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            let pages = [testParams.data, testParams.data2];
-            resolve(pages[paginationData.pageNumber - 1]);
+            const pages = [testParams.data!, testParams.data2!];
+            resolve(pages[paginationData!.pageNumber - 1]!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     testParams.pageNumber = 1;
 
@@ -899,21 +924,21 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     );
   });
 
-  test('loadData is called once if updated totalRows on the loadData function and totalRows is correct', async function (assert) {
+  test('loadData is called once if updated totalRows on the loadData function and totalRows is correct', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            testParams.totalRows = testParams.data.length;
-            resolve(testParams.data);
+            testParams.totalRows = testParams.data!.length;
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -961,20 +986,20 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.ok(testParams.loadData.calledOnce, 'loadData was called once');
   });
 
-  test('loadData is called once if we change @filter from undefined to ""', async function (assert) {
+  test('loadData is called once if we change @filter from undefined to ""', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            resolve(testParams.data);
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -1020,15 +1045,15 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.ok(testParams.loadData.calledOnce, 'loadData was called once');
   });
 
-  test('loadData can be an ember-concurrency restartable task and be cancelled', async function (assert) {
+  test('loadData can be an ember-concurrency restartable task and be cancelled', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     assert.expect(4);
-    let spy = sinon.spy();
+    const spy = sinon.spy();
     let hardWorkCounter = 0;
 
     class Obj {
-      loadData = task({ restartable: true }, async (...args) => {
+      loadData = task({ restartable: true }, async (...args: unknown[]) => {
         spy(...args);
         await timeout(100);
         hardWorkCounter++;
@@ -1040,7 +1065,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
 
     testParams.filterText = 'Migu';
 
-    render(
+    void render(
       <template>
         <YetiTable
           @loadData={{perform obj.loadData}}
@@ -1091,20 +1116,20 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     await clearRender();
   });
 
-  test('reloadData from @registerApi reruns the @loadData function', async function (assert) {
+  test('reloadData from @registerApi reruns the @loadData function', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            resolve(testParams.data);
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -1136,14 +1161,14 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
 
     assert.ok(testParams.loadData.calledOnce, 'loadData was called once');
 
-    testParams.data.push({
+    testParams.data!.push({
       firstName: 'New',
       lastName: 'User',
       points: 12,
     });
     notifyPropertyChange(testParams, 'data');
 
-    testParams.tableApi.reloadData();
+    void testParams.tableApi!.reloadData();
     await settled();
 
     assert
@@ -1155,20 +1180,20 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
     assert.ok(testParams.loadData.calledTwice, 'loadData was called twice');
   });
 
-  test('reloadData from yielded action reruns the @loadData function', async function (assert) {
+  test('reloadData from yielded action reruns the @loadData function', async function (this: TestContext, assert) {
     const testParams = setupTestData();
 
     testParams.loadData = sinon.spy(() => {
-      return new RSVP.Promise((resolve) => {
+      return new Promise<Row[]>((resolve) => {
         runTask(
           this,
           () => {
-            resolve(testParams.data);
+            resolve(testParams.data!);
           },
           150,
         );
       });
-    });
+    }) as SinonSpy & LoadDataFn;
 
     await render(
       <template>
@@ -1205,7 +1230,7 @@ module('Integration | Component | yeti-table (async)', function (hooks) {
 
     assert.ok(testParams.loadData.calledOnce, 'loadData was called once');
 
-    testParams.data.push({
+    testParams.data!.push({
       firstName: 'New',
       lastName: 'User',
       points: 12,

@@ -29,7 +29,7 @@ export interface TBodySignature {
   Blocks: {
     default: [
       {
-        row: WithBoundArgs<typeof TBodyRow, 'theme' | 'onClick' | 'columns'>
+        row: WithBoundArgs<typeof TBodyRow, 'theme' | 'onClick' | 'columns'>;
       },
       Row[] | undefined,
     ];
