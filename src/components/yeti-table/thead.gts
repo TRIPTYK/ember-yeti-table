@@ -4,7 +4,7 @@ import { hash } from '@ember/helper';
 
 import type { WithBoundArgs } from '@glint/template';
 
-import THead from './thead/row.gts';
+import THeadRow from './thead/row.gts';
 import type Column from './thead/row/column.gts';
 import type { ColumnParent } from './thead/row/column.gts';
 import type { ColumnDefinition, SortDirection, Theme } from '../../types.ts';
@@ -31,7 +31,7 @@ export interface THeadSignature {
     default: [
       {
         row: WithBoundArgs<
-          typeof THead,
+          typeof THeadRow,
           | 'sortable'
           | 'sortSequence'
           | 'onColumnClick'
@@ -49,7 +49,7 @@ const THeadComponent: TemplateOnlyComponent<THeadSignature> = <template>
     {{yield
       (hash
         row=(component
-          THead
+          THeadRow
           sortable=@sortable
           sortSequence=@sortSequence
           onColumnClick=@onColumnClick

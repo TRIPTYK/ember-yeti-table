@@ -5,8 +5,7 @@ import { hash } from '@ember/helper';
 
 import type { WithBoundArgs } from '@glint/template';
 
-import THead from './thead/row/column.gts';
-import type Column from './thead/row/column.gts';
+import Column from './thead/row/column.gts';
 import type { ColumnParent } from './thead/row/column.gts';
 import type { ColumnDefinition, SortDirection, Theme } from '../../types.ts';
 
@@ -31,7 +30,7 @@ export interface HeaderSignature {
     default: [
       {
         column: WithBoundArgs<
-          typeof THead,
+          typeof Column,
           'sortable' | 'sortSequence' | 'onClick' | 'parent' | 'theme'
         >;
       },
@@ -53,7 +52,7 @@ export default class Header extends Component<HeaderSignature> {
         {{yield
           (hash
             column=(component
-              THead
+              Column
               sortable=@sortable
               sortSequence=@sortSequence
               onClick=this.onColumnClickHeader

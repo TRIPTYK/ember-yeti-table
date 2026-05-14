@@ -40,6 +40,7 @@ import type {
   Theme,
 } from '../types.ts';
 import type { Comparator } from '../utils/sorting-utils.ts';
+import type { WithBoundArgs } from '@glint/template';
 
 const TASK_CANCELATION_NAME = 'TaskCancelation';
 const didCancel = function (e: unknown): boolean {
@@ -149,13 +150,32 @@ export interface YetiTableSignature {
   Blocks: {
     default: [
       {
-        table: unknown;
-        header: unknown;
-        thead: unknown;
-        body: unknown;
-        tbody: unknown;
-        tfoot: unknown;
-        pagination: unknown;
+        table: WithBoundArgs<typeof Table, 'theme' | 'parent'>;
+        header: WithBoundArgs<
+          typeof HeaderComponent,
+          | 'columns'
+          | 'onColumnClick'
+          | 'sortable'
+          | 'sortSequence'
+          | 'parent'
+          | 'theme'
+        >;
+        thead: WithBoundArgs<
+          typeof THead,
+          | 'columns'
+          | 'onColumnClick'
+          | 'sortable'
+          | 'sortSequence'
+          | 'theme'
+          | 'parent'
+        >;
+        body: WithBoundArgs<typeof Body, 'data' | 'columns' | 'theme'>;
+        tbody: WithBoundArgs<typeof TBody, 'data' | 'columns' | 'theme'>;
+        tfoot: WithBoundArgs<typeof TFoot, 'columns' | 'theme' | 'parent'>;
+        pagination: WithBoundArgs<
+          typeof Pagination,
+          'disabled' | 'theme' | 'paginationData' | 'paginationActions'
+        >;
         actions: YetiTable['publicApi'];
         paginationData: PaginationData;
         isLoading: boolean;
