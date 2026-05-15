@@ -7,3 +7,5 @@ onlyBuiltDependencies:
 patchedDependencies:
   ember-lifeline: patches/ember-lifeline.patch
 resolvePeersFromWorkspaceRoot: false
+
+ignoreWorkspaceRootCheck: true
