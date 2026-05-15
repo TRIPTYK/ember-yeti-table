@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  ember-lifeline:
+    hash: 09ee1a0748c6d3860702d4c110a01ae317107ed31298d490c243d0bc7f54bed8
+    path: patches/ember-lifeline.patch
+
 importers:
 
   .:
@@ -107,7 +112,7 @@ importers:
         version: 5.2.0(@babel/core@7.29.0)(@glint/template@1.7.7)
       ember-lifeline:
         specifier: ^7.0.0
-        version: 7.0.0(@ember/test-helpers@5.4.2(@babel/core@7.29.0)(@glint/template@1.7.7))
+        version: 7.0.0(patch_hash=09ee1a0748c6d3860702d4c110a01ae317107ed31298d490c243d0bc7f54bed8)(@ember/test-helpers@5.4.2(@babel/core@7.29.0)(@glint/template@1.7.7))
       ember-page-title:
         specifier: ^9.0.3
         version: 9.0.3
@@ -8653,7 +8658,7 @@ snapshots:
       - eslint
       - typescript
 
-  ember-lifeline@7.0.0(@ember/test-helpers@5.4.2(@babel/core@7.29.0)(@glint/template@1.7.7)):
+  ember-lifeline@7.0.0(patch_hash=09ee1a0748c6d3860702d4c110a01ae317107ed31298d490c243d0bc7f54bed8)(@ember/test-helpers@5.4.2(@babel/core@7.29.0)(@glint/template@1.7.7)):
     dependencies:
       '@embroider/addon-shim': 1.10.2
     optionalDependencies:

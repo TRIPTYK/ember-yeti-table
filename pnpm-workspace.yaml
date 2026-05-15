@@ -4,4 +4,6 @@ packages:
 autoInstallPeers: false
 onlyBuiltDependencies:
   - esbuild
+patchedDependencies:
+  ember-lifeline: patches/ember-lifeline.patch
 resolvePeersFromWorkspaceRoot: false
