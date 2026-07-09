@@ -1,6 +1,6 @@
 {
   "name": "@triptyk/ember-yeti-table",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Lightweight and flexible tables addon.",
   "keywords": [
     "ember-addon",
