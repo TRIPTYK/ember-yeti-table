@@ -78,7 +78,10 @@ module(
       pendingColumns.length = 0;
       tableInstance = null;
 
-      YetiTable.prototype.registerColumn = function (this: YetiTable, column: Column) {
+      YetiTable.prototype.registerColumn = function (
+        this: YetiTable,
+        column: Column,
+      ) {
         // eslint-disable-next-line @typescript-eslint/no-this-alias -- capture table instance for deferred registration
         tableInstance = this;
 
@@ -146,24 +149,33 @@ module(
 
       assert.dom('tbody tr').exists({ count: 1 }, 'initial row is rendered');
       assert.dom('[data-test-visible-rows]').hasText('1');
-      assert.ok(testParams.loadData?.called, 'loadData was called on initial render');
+      assert.ok(
+        testParams.loadData?.called,
+        'loadData was called on initial render',
+      );
 
       blockColumnRegistration = true;
 
       await click('[data-test-toggle-labels]');
 
-      assert.dom('[data-test-column-count]').hasText(
-        '0',
-        'columns stay unregistered while registerColumn is deferred',
-      );
-      assert.dom('tbody tr').exists(
-        { count: 1 },
-        'row should remain visible while columns are temporarily unregistered',
-      );
-      assert.dom('[data-test-visible-rows]').hasText(
-        '1',
-        'visibleRows should not be cleared during column re-render',
-      );
+      assert
+        .dom('[data-test-column-count]')
+        .hasText(
+          '0',
+          'columns stay unregistered while registerColumn is deferred',
+        );
+      assert
+        .dom('tbody tr')
+        .exists(
+          { count: 1 },
+          'row should remain visible while columns are temporarily unregistered',
+        );
+      assert
+        .dom('[data-test-visible-rows]')
+        .hasText(
+          '1',
+          'visibleRows should not be cleared during column re-render',
+        );
 
       blockColumnRegistration = false;
 
@@ -175,10 +187,12 @@ module(
 
       assert.dom('[data-test-column-count]').hasText('3');
 
-      assert.dom('tbody tr').exists(
-        { count: 1 },
-        'row should remain visible after columns are re-registered',
-      );
+      assert
+        .dom('tbody tr')
+        .exists(
+          { count: 1 },
+          'row should remain visible after columns are re-registered',
+        );
       assert.dom('[data-test-visible-rows]').hasText('1');
     });
   },
