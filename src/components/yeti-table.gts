@@ -328,6 +328,10 @@ export default class YetiTable extends Component<YetiTableSignature> {
     let data: Row[] | Promise<Row[]> | undefined = this.args.data;
 
     if (this.columns.length == 0) {
+      if (typeof this.args.loadData === 'function') {
+        return this.previousResolvedData;
+      }
+
       return [] as Row[];
     }
 
